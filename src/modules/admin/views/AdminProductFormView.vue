@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto px-8 py-8">
+  <div ref="formTop" class="max-w-4xl mx-auto px-8 py-8">
     <!-- Header -->
     <div class="flex items-start justify-between mb-8">
       <div>
@@ -54,6 +54,22 @@
           <div>
             <label class="field-label">SKU *</label>
             <input v-model="form.sku" type="text" class="field-input font-mono" placeholder="DAN-068Z3073" />
+          </div>
+          <div>
+            <label class="field-label">ID de producto</label>
+            <div class="flex gap-2">
+              <input v-model="form.ref_code" type="text" class="field-input font-mono flex-1" placeholder="FSP-A3K7PQ" />
+              <button
+                type="button"
+                @click="form.ref_code = generateRefCode()"
+                class="flex-shrink-0 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5"
+                title="Generar ID aleatorio"
+              >
+                <Shuffle class="h-3.5 w-3.5" />
+                Generar
+              </button>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Código de referencia interno. Opcional.</p>
           </div>
           <div class="col-span-2">
             <label class="field-label">
@@ -269,9 +285,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ChevronRight, Loader2, Save, Plus, X } from '@lucide/vue'
+import { ChevronRight, Loader2, Save, Plus, X, Shuffle } from '@lucide/vue'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
 import {
   getAdminProduct,
@@ -286,16 +302,22 @@ const catalogStore = useCatalogStore()
 
 const REFRIGERANTS = ['R-22', 'R-134a', 'R-404A', 'R-407C', 'R-410A', 'R-448A', 'R-449A', 'R-507']
 
-const isEditMode     = computed(() => !!route.params.id)
+const isEditMode       = computed(() => !!route.params.id)
 const isLoadingProduct = ref(false)
-const isSaving       = ref(false)
-const pageError      = ref('')
-const slugTouched    = ref(false)
-const imageInput     = ref('')
+const isSaving         = ref(false)
+const pageError        = ref('')
+const slugTouched      = ref(false)
+const imageInput       = ref('')
+const formTop          = ref<HTMLElement | null>(null)
+
+function showError(msg: string) {
+  pageError.value = msg
+  nextTick(() => formTop.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+}
 
 type SpecRow = { key: string; value: string; unit: string; group: string }
 interface FormState {
-  sku: string; name: string; slug: string; description: string
+  sku: string; name: string; slug: string; description: string; ref_code: string
   brand_id: number | null; category_id: number | null; product_line_id: number | null
   price: number | ''; price_distributor: number | ''; price_technician: number | ''
   stock: number | ''
@@ -306,13 +328,19 @@ interface FormState {
 }
 
 const form = reactive<FormState>({
-  sku: '', name: '', slug: '', description: '',
+  sku: '', name: '', slug: '', description: '', ref_code: '',
   brand_id: null, category_id: null, product_line_id: null,
   price: '', price_distributor: '', price_technician: '',
   stock: '',
   is_featured: false, is_new: false,
   images: [], specs: [], refrigerants: [],
 })
+
+function generateRefCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+  return `FSP-${rand}`
+}
 
 const filteredCategories = computed(() => {
   if (!form.product_line_id) return catalogStore.categories
@@ -351,6 +379,7 @@ onMounted(async () => {
     form.name             = p.name
     form.slug             = p.slug
     form.description      = p.description
+    form.ref_code         = p.ref_code ?? ''
     form.brand_id         = p.brand_id
     form.category_id      = p.category_id
     form.product_line_id  = p.product_line_id
@@ -367,7 +396,7 @@ onMounted(async () => {
     }))
     slugTouched.value = true
   } catch (e: unknown) {
-    pageError.value = e instanceof Error ? e.message : 'Error cargando producto'
+    showError(e instanceof Error ? e.message : 'Error cargando producto')
   } finally {
     isLoadingProduct.value = false
   }
@@ -376,7 +405,7 @@ onMounted(async () => {
 async function handleSave() {
   pageError.value = ''
   if (!form.name || !form.sku || form.price === '') {
-    pageError.value = 'Nombre, SKU y precio son obligatorios.'
+    showError('Nombre, SKU y precio son obligatorios.')
     return
   }
   isSaving.value = true
@@ -386,6 +415,7 @@ async function handleSave() {
       name:              form.name,
       slug:              form.slug || slugify(form.name),
       description:       form.description,
+      ref_code:          form.ref_code.trim() || null,
       brand_id:          form.brand_id,
       category_id:       form.category_id,
       product_line_id:   form.product_line_id,
@@ -411,7 +441,7 @@ async function handleSave() {
     }
     router.push('/admin/products')
   } catch (e: unknown) {
-    pageError.value = e instanceof Error ? e.message : 'Error al guardar'
+    showError(e instanceof Error ? e.message : 'Error al guardar')
   } finally {
     isSaving.value = false
   }

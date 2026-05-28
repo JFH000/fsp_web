@@ -3,10 +3,16 @@
     <!-- Image -->
     <RouterLink :to="`/product/${product.id}`" class="block relative overflow-hidden bg-slate-50 h-48">
       <img
+        v-if="product.images.length && !imgBroken"
         :src="product.images[0]"
         :alt="product.name"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        @error="imgBroken = true"
       />
+      <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-300">
+        <Package class="h-10 w-10" />
+        <span class="text-xs">Sin imagen</span>
+      </div>
       <!-- Badges overlay -->
       <div class="absolute top-2 left-2 flex flex-col gap-1">
         <AppBadge v-if="product.isNew" variant="orange" size="xs">NUEVO</AppBadge>
@@ -86,7 +92,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ShoppingCart, Check } from '@lucide/vue'
+import { ShoppingCart, Check, Package } from '@lucide/vue'
 import type { Product } from '@/shared/types'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { formatCurrency } from '@/shared/utils/currency'
@@ -94,7 +100,8 @@ import AppBadge from '@/shared/components/ui/AppBadge.vue'
 
 const props = defineProps<{ product: Product }>()
 const cartStore = useCartStore()
-const adding = ref(false)
+const adding    = ref(false)
+const imgBroken = ref(false)
 
 function handleAdd() {
   cartStore.addToCart(props.product)

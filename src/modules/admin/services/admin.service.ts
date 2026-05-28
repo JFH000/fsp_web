@@ -5,6 +5,7 @@ export type ProductPayload = {
   name: string
   slug: string
   description: string
+  ref_code: string | null
   brand_id: number | null
   category_id: number | null
   product_line_id: number | null
@@ -39,6 +40,7 @@ export type AdminProductDetail = {
   name: string
   slug: string
   description: string
+  ref_code: string | null
   price: number
   price_distributor: number | null
   price_technician: number | null

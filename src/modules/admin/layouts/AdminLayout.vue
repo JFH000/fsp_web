@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-slate-100 overflow-hidden">
+  <div class="fixed inset-0 flex bg-slate-100">
     <!-- Sidebar -->
     <aside class="w-56 bg-slate-900 flex flex-col flex-shrink-0">
       <!-- Logo -->

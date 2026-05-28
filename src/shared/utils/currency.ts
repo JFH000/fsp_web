@@ -1,11 +1,12 @@
-export function formatCurrency(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('es-MX', {
+export function formatCurrency(amount: number, currency = 'COP'): string {
+  return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount)
 }
 
 export function formatNumber(n: number): string {
-  return new Intl.NumberFormat('es-MX').format(n)
+  return new Intl.NumberFormat('es-CO').format(n)
 }

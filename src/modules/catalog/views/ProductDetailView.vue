@@ -29,7 +29,17 @@
         <!-- Images -->
         <div>
           <div class="relative bg-slate-50 rounded-2xl overflow-hidden aspect-square mb-3 border border-slate-100">
-            <img :src="product.images[activeImage]" :alt="product.name" class="w-full h-full object-cover" />
+            <img
+              v-if="currentImage"
+              :src="currentImage"
+              :alt="product.name"
+              class="w-full h-full object-cover"
+              @error="activeImage = -1"
+            />
+            <div v-else class="w-full h-full flex flex-col items-center justify-center gap-3 text-slate-300">
+              <PackageSearch class="h-16 w-16" />
+              <span class="text-sm">Sin imagen</span>
+            </div>
             <div class="absolute top-3 left-3 flex flex-col gap-1.5">
               <AppBadge v-if="product.isNew" variant="orange">NUEVO</AppBadge>
             </div>
@@ -153,6 +163,12 @@ const product    = computed(() => catalog.getById(route.params.id as string))
 const activeImage = ref(0)
 const qty         = ref(1)
 const justAdded   = ref(false)
+
+const currentImage = computed(() => {
+  const imgs = product.value?.images ?? []
+  if (activeImage.value < 0 || activeImage.value >= imgs.length) return ''
+  return imgs[activeImage.value]
+})
 
 function handleAdd() {
   if (!product.value) return
