@@ -10,21 +10,9 @@
             </div>
             <span class="text-xl font-bold text-white">FS <span class="text-brand-400">Parts</span></span>
           </div>
-          <p class="text-sm leading-relaxed mb-4">
+          <p class="text-sm leading-relaxed">
             Distribuidor especializado en piezas y equipos para refrigeración, aire acondicionado y HVAC/R.
           </p>
-          <div class="flex items-center gap-2 text-sm">
-            <MapPin class="h-4 w-4 text-brand-400 flex-shrink-0" />
-            <span>Ciudad de México, México</span>
-          </div>
-          <div class="flex items-center gap-2 text-sm mt-2">
-            <Phone class="h-4 w-4 text-brand-400 flex-shrink-0" />
-            <span>+52 (55) 1234-5678</span>
-          </div>
-          <div class="flex items-center gap-2 text-sm mt-2">
-            <Mail class="h-4 w-4 text-brand-400 flex-shrink-0" />
-            <span>ventas@fsparts.org</span>
-          </div>
         </div>
 
         <!-- Lines -->
@@ -83,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Snowflake, MapPin, Phone, Mail, ShieldCheck } from '@lucide/vue'
+import { Snowflake, ShieldCheck } from '@lucide/vue'
 import { PRODUCT_LINES, BRANDS } from '@/modules/catalog/data/mock'
 
 const year = computed(() => new Date().getFullYear())

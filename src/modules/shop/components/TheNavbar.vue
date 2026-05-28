@@ -1,10 +1,5 @@
 <template>
   <header :class="['sticky top-0 z-40 w-full transition-shadow duration-300', scrolled ? 'shadow-lg' : 'shadow-sm']">
-    <!-- Top bar -->
-    <div class="bg-brand-900 text-slate-300 text-xs py-1.5 px-4 text-center hidden sm:block">
-      Envíos a todo México · Atención técnica especializada · <span class="text-accent-400 font-semibold">+52 (55) 1234-5678</span>
-    </div>
-
     <!-- Main navbar -->
     <nav class="bg-white border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">

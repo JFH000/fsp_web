@@ -10,74 +10,72 @@
       <!-- Gradient overlay -->
       <div class="absolute inset-0 bg-gradient-to-br from-brand-950/80 via-slate-900/60 to-slate-900/90" />
 
-      <div class="relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-16">
-        <div class="max-w-3xl">
-          <!-- Pill tag -->
-          <div class="inline-flex items-center gap-2 bg-brand-700/30 border border-brand-500/40 rounded-full px-4 py-1.5 text-brand-300 text-sm mb-6">
-            <Zap class="h-3.5 w-3.5 text-accent-400" />
-            +5,000 productos en stock · Envío inmediato
-          </div>
+      <div class="relative z-10 max-w-7xl mx-auto px-4 pt-24 pb-20 flex flex-col items-center text-center">
+        <!-- Pill tag -->
+        <div class="inline-flex items-center gap-2 bg-brand-700/30 border border-brand-500/40 rounded-full px-4 py-1.5 text-brand-300 text-sm mb-8">
+          <Zap class="h-3.5 w-3.5 text-accent-400" />
+          +5,000 productos en stock · Distribución especializada
+        </div>
 
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight mb-6">
-            Tu distribuidor<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">
-              HVAC/R
-            </span>
-            <span class="text-white"> de confianza</span>
-          </h1>
-          <p class="text-xl text-slate-300 mb-10 max-w-2xl leading-relaxed">
-            Compresores, válvulas, refrigerantes, filtros e intercambiadores de calor.
-            Todo para refrigeración y aire acondicionado industrial y comercial.
-          </p>
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight mb-6 max-w-4xl">
+          Tu distribuidor<br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">
+            HVAC/R
+          </span>
+          <span class="text-white"> de confianza</span>
+        </h1>
+        <p class="text-xl text-slate-300 mb-10 max-w-2xl leading-relaxed">
+          Compresores, válvulas, refrigerantes, filtros e intercambiadores de calor.
+          Todo para refrigeración y aire acondicionado industrial y comercial.
+        </p>
 
-          <!-- Search bar -->
-          <form @submit.prevent="handleSearch" class="flex gap-0 max-w-2xl mb-10">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Buscar por nombre, SKU o marca..."
-              class="flex-1 px-5 py-4 text-base rounded-l-xl border-0 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-xl"
-            />
-            <button
-              type="submit"
-              class="bg-accent-500 hover:bg-accent-600 text-white px-7 py-4 rounded-r-xl font-semibold text-base transition-colors shadow-xl flex items-center gap-2"
-            >
-              <Search class="h-5 w-5" />
-              Buscar
-            </button>
-          </form>
+        <!-- Search bar -->
+        <form @submit.prevent="handleSearch" class="flex gap-0 w-full max-w-2xl mb-8">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Buscar por nombre, SKU o marca..."
+            class="flex-1 px-5 py-4 text-base rounded-l-xl border-0 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-xl"
+          />
+          <button
+            type="submit"
+            class="bg-accent-500 hover:bg-accent-600 text-white px-7 py-4 rounded-r-xl font-semibold text-base transition-colors shadow-xl flex items-center gap-2"
+          >
+            <Search class="h-5 w-5" />
+            Buscar
+          </button>
+        </form>
 
-          <!-- Quick category links -->
-          <div class="flex flex-wrap gap-2">
-            <RouterLink
-              v-for="line in productLines.slice(0, 5)"
-              :key="line.id"
-              :to="`/catalog?line=${line.code}`"
-              class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-slate-200 text-sm px-4 py-2 rounded-full transition-all"
-            >
-              <component :is="lineIcon(line.icon)" class="h-3.5 w-3.5 text-brand-400" />
-              {{ line.name.split(' ')[0] }}
-            </RouterLink>
-            <RouterLink
-              to="/catalog"
-              class="flex items-center gap-1 bg-accent-500/20 hover:bg-accent-500/30 border border-accent-500/40 text-accent-300 text-sm px-4 py-2 rounded-full transition-all"
-            >
-              Ver todo <ArrowRight class="h-3.5 w-3.5" />
-            </RouterLink>
-          </div>
+        <!-- Quick category links -->
+        <div class="flex flex-wrap justify-center gap-2 mb-14">
+          <RouterLink
+            v-for="line in productLines.slice(0, 5)"
+            :key="line.id"
+            :to="`/catalog?line=${line.code}`"
+            class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-slate-200 text-sm px-4 py-2 rounded-full transition-all"
+          >
+            <component :is="lineIcon(line.icon)" class="h-3.5 w-3.5 text-brand-400" />
+            {{ line.name.split(' ')[0] }}
+          </RouterLink>
+          <RouterLink
+            to="/catalog"
+            class="flex items-center gap-1 bg-accent-500/20 hover:bg-accent-500/30 border border-accent-500/40 text-accent-300 text-sm px-4 py-2 rounded-full transition-all"
+          >
+            Ver todo <ArrowRight class="h-3.5 w-3.5" />
+          </RouterLink>
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-3 gap-4 mt-16 max-w-lg">
-          <div class="text-center">
+        <div class="grid grid-cols-3 gap-px bg-slate-700/50 rounded-2xl overflow-hidden max-w-sm w-full">
+          <div class="bg-slate-800/60 backdrop-blur-sm text-center py-5 px-4">
             <p class="text-3xl font-bold text-white">5,000+</p>
             <p class="text-xs text-slate-400 mt-1">Productos</p>
           </div>
-          <div class="text-center border-x border-slate-700">
+          <div class="bg-slate-800/60 backdrop-blur-sm text-center py-5 px-4">
             <p class="text-3xl font-bold text-white">50+</p>
             <p class="text-xs text-slate-400 mt-1">Marcas</p>
           </div>
-          <div class="text-center">
+          <div class="bg-slate-800/60 backdrop-blur-sm text-center py-5 px-4">
             <p class="text-3xl font-bold text-white">15+</p>
             <p class="text-xs text-slate-400 mt-1">Años</p>
           </div>
