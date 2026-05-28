@@ -66,7 +66,7 @@ export async function listAdminProducts(): Promise<AdminProductRow[]> {
     .select('id, sku, name, price, price_distributor, stock, is_featured, is_new, images, brand:brands(id, name), product_line:product_lines(id, code)')
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []) as AdminProductRow[]
+  return (data ?? []) as unknown as AdminProductRow[]
 }
 
 export async function getAdminProduct(id: string): Promise<AdminProductDetail> {
