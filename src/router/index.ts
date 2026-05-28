@@ -1,43 +1,54 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import ShopLayout from '@/layouts/ShopLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      name: 'catalog',
-      component: () => import('@/views/CatalogView.vue'),
-    },
-    {
-      path: '/product/:id',
-      name: 'product-detail',
-      component: () => import('@/views/ProductDetailView.vue'),
-    },
-    {
-      path: '/cart',
-      name: 'cart',
-      component: () => import('@/views/CartView.vue'),
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: () => import('@/views/admin/AdminLayout.vue'),
+      component: ShopLayout,
       children: [
         {
           path: '',
-          name: 'admin-dashboard',
-          component: () => import('@/views/admin/DashboardView.vue'),
+          name: 'landing',
+          component: () => import('@/modules/landing/views/LandingView.vue'),
         },
         {
-          path: 'products',
-          name: 'admin-products',
-          component: () => import('@/views/admin/ProductsView.vue'),
+          path: 'catalog',
+          name: 'catalog',
+          component: () => import('@/modules/catalog/views/CatalogView.vue'),
+        },
+        {
+          path: 'product/:id',
+          name: 'product-detail',
+          component: () => import('@/modules/catalog/views/ProductDetailView.vue'),
+        },
+        {
+          path: 'cart',
+          name: 'cart',
+          component: () => import('@/modules/cart/views/CartView.vue'),
+        },
+        {
+          path: 'checkout',
+          name: 'checkout',
+          component: () => import('@/modules/cart/views/CartView.vue'), // placeholder
+        },
+        {
+          path: 'hvac-calculator',
+          name: 'hvac-calculator',
+          component: () => import('@/modules/catalog/views/CatalogView.vue'), // placeholder
         },
       ],
     },
+    // Admin (will have its own layout + auth guard in future iterations)
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('@/modules/catalog/views/CatalogView.vue'), // placeholder
+    },
   ],
-  scrollBehavior() {
-    return { top: 0 }
+  scrollBehavior(_to, _from, savedPosition) {
+    return savedPosition ?? { top: 0 }
   },
 })
 
