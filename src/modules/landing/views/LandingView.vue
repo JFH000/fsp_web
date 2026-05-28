@@ -19,7 +19,7 @@
 
         <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight mb-6 max-w-4xl">
           Tu distribuidor<br />
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">
+          <span class="hvac-gradient">
             HVAC/R
           </span>
           <span class="text-white"> de confianza</span>
@@ -218,3 +218,20 @@ const benefits = [
   { icon: Award,        title: 'Distribuidor oficial', desc: 'Distribuidor autorizado de las mejores marcas' },
 ]
 </script>
+
+<style scoped>
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hvac-gradient {
+  background: linear-gradient(90deg, #60a5fa, #f97316, #a78bfa, #60a5fa);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-shift 4s ease infinite;
+}
+</style>
