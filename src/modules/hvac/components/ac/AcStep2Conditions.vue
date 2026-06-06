@@ -22,6 +22,10 @@
       </div>
     </div>
 
+    <p v-if="form.outdoorTemp <= form.indoorTemp" class="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
+      La temperatura exterior es igual o menor a la interior — la carga de enfriamiento será cero (no se requiere AC activo).
+    </p>
+
     <!-- Wall insulation -->
     <div class="mb-6">
       <label class="field-label">Aislamiento de paredes</label>

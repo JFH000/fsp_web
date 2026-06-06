@@ -61,7 +61,7 @@ export function calculateColdLoad(i: ColdInputs): ColdResult {
 
   const cp       = i.indoorTemp < 0 ? CP[i.productType].below : CP[i.productType].above
   const dtProd   = i.productEntryTemp - i.indoorTemp
-  const qProduct = i.pullDownHours > 0
+  const qProduct = i.pullDownHours > 0 && i.productMass > 0
     ? (i.productMass * cp * 1000 * dtProd) / (i.pullDownHours * 3600)
     : 0
 

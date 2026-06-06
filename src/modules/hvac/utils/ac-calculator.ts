@@ -51,7 +51,7 @@ const SAFETY = 1.10
 export function calculateAcLoad(i: AcInputs): AcResult {
   const deltaT      = i.outdoorTemp - i.indoorTemp
   const floorArea   = i.length * i.width
-  const wallArea    = 2 * (i.length + i.width) * i.height - i.windowArea
+  const wallArea    = Math.max(0, 2 * (i.length + i.width) * i.height - i.windowArea)
   const expFactor   = EXPOSURE_FACTOR[i.solarExposure]
 
   const qWalls       = U_WALL[i.wallInsulation] * wallArea * deltaT
@@ -63,7 +63,7 @@ export function calculateAcLoad(i: AcInputs): AcResult {
   const qLighting    = LIGHTING_W_M2[i.lighting] * floorArea
   const qEquipment   = EQUIPMENT_W[i.equipment]
 
-  const qSubtotal = qWalls + qRoof + qWindows + qSolar + qInfiltration + qOccupants + qLighting + qEquipment
+  const qSubtotal = Math.max(0, qWalls + qRoof + qWindows + qSolar + qInfiltration + qOccupants + qLighting + qEquipment)
   const qTotal    = qSubtotal * SAFETY
 
   return {
