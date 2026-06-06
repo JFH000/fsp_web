@@ -120,7 +120,7 @@
               <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white">
                 <button @click="qty > 1 && qty--" class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 transition-colors text-lg font-bold cursor-pointer">−</button>
                 <span class="px-4 text-base font-semibold min-w-[3rem] text-center">{{ qty }}</span>
-                <button @click="qty < (product.stock ?? 99) && qty++" class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 transition-colors text-lg font-bold cursor-pointer">+</button>
+                <button @click="(!product.stock || qty < product.stock) && qty++" class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 transition-colors text-lg font-bold cursor-pointer">+</button>
               </div>
               <button
                 @click="handleAdd"
