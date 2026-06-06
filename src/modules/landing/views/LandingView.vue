@@ -35,11 +35,11 @@
             v-model="searchQuery"
             type="text"
             placeholder="Buscar por nombre, SKU o marca..."
-            class="flex-1 px-5 py-4 text-base rounded-l-xl border-0 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-xl"
+            class="flex-1 px-6 py-4 text-base rounded-l-full border-0 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-xl"
           />
           <button
             type="submit"
-            class="bg-accent-500 hover:bg-accent-600 text-white px-7 py-4 rounded-r-xl font-semibold text-base transition-colors shadow-xl flex items-center gap-2"
+            class="bg-accent-500 hover:bg-accent-600 text-white px-7 py-4 rounded-r-full font-semibold text-base transition-colors shadow-xl flex items-center gap-2"
           >
             <Search class="h-5 w-5" />
             Buscar
@@ -59,24 +59,24 @@
           </RouterLink>
           <RouterLink
             to="/catalog"
-            class="flex items-center gap-1 bg-accent-500/20 hover:bg-accent-500/30 border border-accent-500/40 text-accent-300 text-sm px-4 py-2 rounded-full transition-all"
+            class="flex items-center gap-1 bg-accent-500/40 hover:bg-accent-500/60 border border-accent-400/70 text-white font-semibold text-sm px-4 py-2 rounded-full transition-all"
           >
             Ver todo <ArrowRight class="h-3.5 w-3.5" />
           </RouterLink>
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-3 gap-px bg-slate-700/50 rounded-2xl overflow-hidden max-w-sm w-full">
+        <div ref="statsRef" class="grid grid-cols-3 gap-px bg-slate-700/50 rounded-2xl overflow-hidden max-w-sm w-full">
           <div class="bg-slate-800/60 backdrop-blur-sm text-center py-5 px-4">
-            <p class="text-3xl font-bold text-white">5,000+</p>
+            <p class="text-3xl font-bold text-white">{{ statsStarted ? displayProducts : '0' }}+</p>
             <p class="text-xs text-slate-400 mt-1">Productos</p>
           </div>
           <div class="bg-slate-800/60 backdrop-blur-sm text-center py-5 px-4">
-            <p class="text-3xl font-bold text-white">50+</p>
+            <p class="text-3xl font-bold text-white">{{ statsStarted ? displayBrands : '0' }}+</p>
             <p class="text-xs text-slate-400 mt-1">Marcas</p>
           </div>
           <div class="bg-slate-800/60 backdrop-blur-sm text-center py-5 px-4">
-            <p class="text-3xl font-bold text-white">15+</p>
+            <p class="text-3xl font-bold text-white">{{ statsStarted ? displayYears : '0' }}+</p>
             <p class="text-xs text-slate-400 mt-1">Años</p>
           </div>
         </div>
@@ -187,7 +187,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Search, ArrowRight, Zap, Calculator,
@@ -216,6 +216,49 @@ const benefits = [
   { icon: Headphones,   title: 'Soporte técnico',      desc: 'Asesoría especializada en refrigeración y HVAC' },
   { icon: Award,        title: 'Distribuidor oficial', desc: 'Distribuidor autorizado de las mejores marcas' },
 ]
+
+// Count-up animation for stats
+const statsRef     = ref<HTMLElement | null>(null)
+const statsStarted = ref(false)
+const countProducts = ref(0)
+const countBrands   = ref(0)
+const countYears    = ref(0)
+
+const displayProducts = computed(() => countProducts.value.toLocaleString('es-CO'))
+const displayBrands   = computed(() => countBrands.value.toString())
+const displayYears    = computed(() => countYears.value.toString())
+
+function animateCount(target: { value: number }, end: number, duration: number) {
+  const start     = performance.now()
+  const startVal  = 0
+  function step(now: number) {
+    const elapsed  = now - start
+    const progress = Math.min(elapsed / duration, 1)
+    // Ease-out cubic
+    const ease     = 1 - Math.pow(1 - progress, 3)
+    target.value   = Math.round(startVal + (end - startVal) * ease)
+    if (progress < 1) requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
+}
+
+let observer: IntersectionObserver | null = null
+onMounted(() => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && !statsStarted.value) {
+        statsStarted.value = true
+        animateCount(countProducts, 5000, 1800)
+        animateCount(countBrands,   50,   1400)
+        animateCount(countYears,    15,   1200)
+        observer?.disconnect()
+      }
+    },
+    { threshold: 0.5 },
+  )
+  if (statsRef.value) observer.observe(statsRef.value)
+})
+onUnmounted(() => observer?.disconnect())
 </script>
 
 <style scoped>
