@@ -8,7 +8,7 @@ export const useCartStore = defineStore('cart', () => {
   const isDrawerOpen = ref(false)
 
   const totalItems = computed(() => items.value.reduce((s, i) => s + i.quantity, 0))
-  const subtotal   = computed(() => items.value.reduce((s, i) => s + i.product.price * i.quantity, 0))
+  const subtotal   = computed(() => items.value.reduce((s, i) => s + (i.product.priceCop ?? i.product.priceUsd ?? 0) * i.quantity, 0))
 
   function addToCart(product: Product, quantity = 1) {
     const existing = items.value.find(i => i.product.id === product.id)

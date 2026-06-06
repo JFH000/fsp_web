@@ -34,7 +34,7 @@
             <span class="px-4 text-sm font-semibold min-w-[2.5rem] text-center">{{ item.quantity }}</span>
             <button @click="cart.updateQuantity(item.product.id, item.quantity + 1)" class="px-3 py-2 text-slate-500 hover:bg-slate-100 font-bold">+</button>
           </div>
-          <p class="font-extrabold text-slate-900 w-24 text-right">{{ formatCurrency(item.product.price * item.quantity) }}</p>
+          <p class="font-extrabold text-slate-900 w-24 text-right">{{ formatCurrency((item.product.priceCop ?? item.product.priceUsd ?? 0) * item.quantity) }}</p>
           <button @click="cart.removeFromCart(item.product.id)" class="text-slate-300 hover:text-red-400 transition-colors ml-1">
             <Trash2 class="h-4 w-4" />
           </button>
@@ -49,7 +49,7 @@
           <div class="space-y-3 mb-5 pb-5 border-b border-slate-100">
             <div v-for="item in cart.items" :key="item.product.id" class="flex justify-between text-sm text-slate-600">
               <span class="truncate max-w-[160px]">{{ item.product.name }} <span class="text-slate-400">×{{ item.quantity }}</span></span>
-              <span class="font-medium flex-shrink-0">{{ formatCurrency(item.product.price * item.quantity) }}</span>
+              <span class="font-medium flex-shrink-0">{{ formatCurrency((item.product.priceCop ?? item.product.priceUsd ?? 0) * item.quantity) }}</span>
             </div>
           </div>
 
