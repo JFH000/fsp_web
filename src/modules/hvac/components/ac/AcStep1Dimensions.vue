@@ -86,8 +86,8 @@ function handleNext() {
 .field-label { @apply block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5; }
 .field-input { @apply w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all; }
 .unit { @apply absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none; }
-.chip { @apply px-3 py-2 rounded-xl border-2 text-sm font-medium transition-all; }
-.chip-active   { @apply border-brand-600 bg-brand-50 text-brand-700; }
-.chip-inactive { @apply border-slate-200 text-slate-600 hover:border-slate-300; }
-.next-btn { @apply bg-brand-700 hover:bg-brand-800 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors; }
+.chip { @apply px-3 py-2 rounded-xl border-2 text-sm font-medium transition-all duration-150 cursor-pointer select-none active:scale-95; }
+.chip-active   { @apply border-brand-600 bg-brand-100 text-brand-800 shadow-sm ring-1 ring-brand-400 ring-offset-1; }
+.chip-inactive { @apply border-slate-200 text-slate-600 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900; }
+.next-btn { @apply bg-brand-700 hover:bg-brand-800 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all duration-150 cursor-pointer; }
 </style>

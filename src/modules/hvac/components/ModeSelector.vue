@@ -6,7 +6,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl">
       <button
         @click="$emit('select', 'ac')"
-        class="group flex flex-col items-center gap-4 bg-white border-2 border-slate-200 hover:border-brand-500 hover:shadow-lg rounded-2xl p-8 transition-all text-left"
+        class="group flex flex-col items-center gap-4 bg-white border-2 border-slate-200 hover:border-brand-500 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.97] active:shadow-md rounded-2xl p-8 transition-all duration-150 text-left cursor-pointer"
       >
         <div class="w-16 h-16 bg-brand-50 group-hover:bg-brand-100 rounded-2xl flex items-center justify-center transition-colors">
           <AirVent class="h-8 w-8 text-brand-700" />
@@ -19,7 +19,7 @@
 
       <button
         @click="$emit('select', 'cold')"
-        class="group flex flex-col items-center gap-4 bg-white border-2 border-slate-200 hover:border-brand-500 hover:shadow-lg rounded-2xl p-8 transition-all text-left"
+        class="group flex flex-col items-center gap-4 bg-white border-2 border-slate-200 hover:border-blue-400 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.97] active:shadow-md rounded-2xl p-8 transition-all duration-150 text-left cursor-pointer"
       >
         <div class="w-16 h-16 bg-blue-50 group-hover:bg-blue-100 rounded-2xl flex items-center justify-center transition-colors">
           <Snowflake class="h-8 w-8 text-blue-600" />

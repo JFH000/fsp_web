@@ -69,6 +69,6 @@ const rows = computed(() => [
 
 <style scoped>
 @reference "../../../../style.css";
-.back-btn  { @apply text-slate-600 hover:text-slate-800 font-semibold px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors; }
-.reset-btn { @apply bg-slate-900 hover:bg-slate-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors; }
+.back-btn  { @apply text-slate-600 hover:text-slate-800 active:scale-95 font-semibold px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 transition-all duration-150 cursor-pointer; }
+.reset-btn { @apply bg-slate-900 hover:bg-slate-700 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all duration-150 cursor-pointer; }
 </style>
