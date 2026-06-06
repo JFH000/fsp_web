@@ -28,12 +28,12 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <!-- Images -->
         <div>
-          <div class="relative bg-slate-50 rounded-2xl overflow-hidden aspect-square mb-3 border border-slate-100">
+          <div class="relative bg-white rounded-2xl overflow-hidden aspect-square mb-3 border border-slate-100">
             <img
               v-if="currentImage"
               :src="currentImage"
               :alt="product.name"
-              class="w-full h-full object-cover"
+              class="w-full h-full object-contain p-4"
               @error="activeImage = -1"
             />
             <div v-else class="w-full h-full flex flex-col items-center justify-center gap-3 text-slate-300">
@@ -54,7 +54,7 @@
                 activeImage === i ? 'border-brand-600' : 'border-slate-100 hover:border-slate-300',
               ]"
             >
-              <img :src="img" :alt="product.name" class="w-full h-full object-cover" />
+              <img :src="img" :alt="product.name" class="w-full h-full object-contain p-1" />
             </button>
           </div>
         </div>
@@ -88,11 +88,11 @@
             <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.price) }}</p>
             <p class="text-xs text-slate-400 mb-4">Precio al público · IVA incluido</p>
 
-            <!-- Stock -->
-            <div class="flex items-center gap-2 mb-5">
-              <div :class="['h-2 w-2 rounded-full', product.stock > 5 ? 'bg-emerald-500' : product.stock > 0 ? 'bg-amber-500' : 'bg-red-400']" />
-              <span class="text-sm font-medium" :class="product.stock > 5 ? 'text-emerald-700' : product.stock > 0 ? 'text-amber-700' : 'text-red-500'">
-                {{ product.stock > 5 ? `${product.stock} unidades en stock` : product.stock > 0 ? `Solo ${product.stock} unidades disponibles` : 'Agotado' }}
+            <!-- Stock (only when stock is known) -->
+            <div v-if="product.stock > 0" class="flex items-center gap-2 mb-5">
+              <div :class="['h-2 w-2 rounded-full', product.stock > 5 ? 'bg-emerald-500' : 'bg-amber-500']" />
+              <span class="text-sm font-medium" :class="product.stock > 5 ? 'text-emerald-700' : 'text-amber-700'">
+                {{ product.stock > 5 ? `${product.stock} unidades en stock` : `Solo ${product.stock} unidades disponibles` }}
               </span>
             </div>
 
@@ -105,8 +105,7 @@
               </div>
               <button
                 @click="handleAdd"
-                :disabled="product.stock === 0"
-                class="flex-1 flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-6 rounded-xl transition-colors text-base"
+                class="flex-1 flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold py-3 px-6 rounded-xl transition-colors text-base"
               >
                 <component :is="justAdded ? Check : ShoppingCart" class="h-5 w-5" />
                 {{ justAdded ? '¡Agregado al carrito!' : 'Agregar al carrito' }}
@@ -114,14 +113,6 @@
             </div>
           </div>
 
-          <!-- Shipping info -->
-          <div class="flex items-center gap-3 text-sm text-slate-600 bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-            <Truck class="h-5 w-5 text-emerald-600 flex-shrink-0" />
-            <div>
-              <p class="font-semibold text-emerald-800">Envío disponible a todo México</p>
-              <p class="text-xs text-emerald-600">Pedidos antes de las 2pm salen el mismo día hábil</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -149,7 +140,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { ChevronRight, ArrowLeft, ShoppingCart, Check, Truck, PackageSearch } from '@lucide/vue'
+import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch } from '@lucide/vue'
 import { useCatalogStore } from '../stores/catalog.store'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { formatCurrency } from '@/shared/utils/currency'

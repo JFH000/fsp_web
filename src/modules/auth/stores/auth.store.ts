@@ -4,15 +4,32 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/core/supabase/client'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user    = ref<User | null>(null)
-  const isReady = ref(false)
+  const user     = ref<User | null>(null)
+  const role     = ref<string | null>(null)
+  const isReady  = ref(false)
 
-  // Single shared promise so multiple callers await the same init
+  const isAuthenticated = computed(() => !!user.value)
+  const isAdmin         = computed(() => role.value === 'admin')
+
   let initPromise: Promise<void> | null = null
 
   function init(): Promise<void> {
     if (!initPromise) initPromise = _init()
     return initPromise
+  }
+
+  async function fetchRole(userId: string): Promise<void> {
+    if (!supabase) return
+    try {
+      const { data } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', userId)
+        .single()
+      role.value = data?.role ?? null
+    } catch {
+      role.value = null
+    }
   }
 
   function _init(): Promise<void> {
@@ -21,14 +38,20 @@ export const useAuthStore = defineStore('auth', () => {
       return Promise.resolve()
     }
 
-    // onAuthStateChange fires INITIAL_SESSION immediately on registration,
-    // giving us the stored session (or null) without a separate getSession() call.
     return new Promise<void>((resolve) => {
       supabase!.auth.onAuthStateChange((_event, session) => {
         user.value = session?.user ?? null
-        if (!isReady.value) {
-          isReady.value = true
-          resolve()
+        const resolveReady = () => {
+          if (!isReady.value) {
+            isReady.value = true
+            resolve()
+          }
+        }
+        if (user.value) {
+          fetchRole(user.value.id).finally(resolveReady)
+        } else {
+          role.value = null
+          resolveReady()
         }
       })
     })
@@ -49,9 +72,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function signOut() {
     if (!supabase) return
     await supabase.auth.signOut()
+    role.value = null
   }
 
-  const isAuthenticated = computed(() => !!user.value)
-
-  return { user, isReady, isAuthenticated, init, signIn, signUp, signOut }
+  return { user, role, isReady, isAuthenticated, isAdmin, init, signIn, signUp, signOut }
 })

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import type { Product, ProductLine, Brand, Category, FilterState, SortOption } from '@/shared/types'
 import { PRODUCTS, PRODUCT_LINES, BRANDS, CATEGORIES, REFRIGERANTS, MAX_PRICE } from '../data/mock'
@@ -109,9 +109,40 @@ export const useCatalogStore = defineStore('catalog', () => {
     return list
   })
 
-  const featuredProducts = computed(() => allProducts.value.filter(p => p.isFeatured).slice(0, 6))
+  const featuredProducts = computed(() => {
+    const marked = allProducts.value.filter(p => p.isFeatured)
+    return (marked.length ? marked : allProducts.value).slice(0, 8)
+  })
+
+  // ── Pagination ────────────────────────────────────────────────────────────────
+  const PAGE_SIZE   = 21
+  const currentPage = ref(1)
+
+  const totalPages = computed(() => Math.max(1, Math.ceil(filteredProducts.value.length / PAGE_SIZE)))
+
+  const paginatedProducts = computed(() => {
+    const start = (currentPage.value - 1) * PAGE_SIZE
+    return filteredProducts.value.slice(start, start + PAGE_SIZE)
+  })
+
+  function setPage(page: number) {
+    currentPage.value = Math.max(1, Math.min(page, totalPages.value))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Reset to page 1 whenever filters change
+  watch(filteredProducts, () => { currentPage.value = 1 })
 
   // ── Supabase init ─────────────────────────────────────────────────────────────
+  function shuffle<T>(arr: T[]): T[] {
+    const a = [...arr]
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[a[i], a[j]] = [a[j], a[i]]
+    }
+    return a
+  }
+
   async function initialize() {
     isLoading.value = true
     try {
@@ -122,7 +153,7 @@ export const useCatalogStore = defineStore('catalog', () => {
         fetchCategories(),
       ])
 
-      allProducts.value     = products
+      allProducts.value     = shuffle(products)
       allProductLines.value = productLines
       allBrands.value       = brands
       allCategories.value   = categories
@@ -131,8 +162,9 @@ export const useCatalogStore = defineStore('catalog', () => {
       const refs = [...new Set(products.flatMap(p => p.refrigerants))].sort()
       allRefrigerants.value = refs.length ? refs : REFRIGERANTS
 
-      // Update price range ceiling to match loaded data
-      filters.value.priceRange = [0, Math.max(...products.map(p => p.price))]
+      // Update price range ceiling only when products actually have prices
+      const maxLoaded = Math.max(...products.map(p => p.price))
+      if (maxLoaded > 0) filters.value.priceRange = [0, maxLoaded]
     } finally {
       isLoading.value = false
     }
@@ -161,6 +193,11 @@ export const useCatalogStore = defineStore('catalog', () => {
     activeFilterCount,
     filteredProducts,
     featuredProducts,
+    currentPage,
+    totalPages,
+    paginatedProducts,
+    pageSize: PAGE_SIZE,
+    setPage,
     // lookups
     getById:   (id: string)   => allProducts.value.find(p => p.id === id),
     getBySlug: (slug: string) => allProducts.value.find(p => p.slug === slug),

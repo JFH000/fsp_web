@@ -72,12 +72,12 @@
             <!-- Producto -->
             <td class="px-5 py-3.5">
               <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
+                <div class="h-10 w-10 rounded-lg bg-white border border-slate-100 overflow-hidden flex-shrink-0">
                   <img
                     v-if="p.images?.[0]"
                     :src="p.images[0]"
                     :alt="p.name"
-                    class="h-full w-full object-cover"
+                    class="h-full w-full object-contain p-0.5"
                   />
                   <div v-else class="h-full w-full flex items-center justify-center">
                     <ImageOff class="h-4 w-4 text-slate-300" />

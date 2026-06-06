@@ -85,26 +85,29 @@ function toCategory(r: DbCategory): Category {
   }
 }
 
-function toProduct(r: DbProduct): Product | null {
-  if (!r.brand || !r.category || !r.product_line) return null
+const FALLBACK_BRAND: Brand         = { id: 0, name: 'Sin Marca',     slug: 'sin-marca'     }
+const FALLBACK_CATEGORY: Category   = { id: 0, name: 'Sin Categoría', slug: 'sin-categoria', productLineId: 0 }
+const FALLBACK_LINE: ProductLine    = { id: 0, code: '---', name: 'Sin Línea', description: '', icon: 'Wrench', slug: 'sin-linea' }
+
+function toProduct(r: DbProduct): Product {
   return {
-    id: r.id,
-    sku: r.sku,
-    name: r.name,
-    slug: r.slug,
-    description: r.description,
-    brand: toBrand(r.brand),
-    category: toCategory(r.category),
-    productLine: toProductLine(r.product_line),
-    price: r.price,
+    id:               r.id,
+    sku:              r.sku,
+    name:             r.name,
+    slug:             r.slug,
+    description:      r.description,
+    brand:            r.brand        ? toBrand(r.brand)           : FALLBACK_BRAND,
+    category:         r.category     ? toCategory(r.category)     : FALLBACK_CATEGORY,
+    productLine:      r.product_line ? toProductLine(r.product_line) : FALLBACK_LINE,
+    price:            r.price,
     priceDistributor: r.price_distributor ?? undefined,
-    priceTechnician: r.price_technician ?? undefined,
-    stock: r.stock,
-    isFeatured: r.is_featured,
-    isNew: r.is_new,
-    images: r.images,
-    specs: r.specs,
-    refrigerants: r.refrigerants,
+    priceTechnician:  r.price_technician  ?? undefined,
+    stock:            r.stock,
+    isFeatured:       r.is_featured,
+    isNew:            r.is_new,
+    images:           r.images,
+    specs:            r.specs,
+    refrigerants:     r.refrigerants,
   }
 }
 
@@ -143,5 +146,5 @@ export async function fetchProducts(): Promise<Product[]> {
     `)
     .order('name')
   if (error || !data?.length) return PRODUCTS
-  return (data as DbProduct[]).map(toProduct).filter((p): p is Product => p !== null)
+  return (data as DbProduct[]).map(toProduct)
 }

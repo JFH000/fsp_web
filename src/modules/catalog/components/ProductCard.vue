@@ -1,12 +1,12 @@
 <template>
   <div class="group bg-white rounded-2xl border border-slate-100 hover:border-brand-200 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col">
     <!-- Image -->
-    <RouterLink :to="`/product/${product.id}`" class="block relative overflow-hidden bg-slate-50 h-48">
+    <RouterLink :to="`/product/${product.id}`" class="block relative overflow-hidden bg-white h-48">
       <img
         v-if="product.images.length && !imgBroken"
         :src="product.images[0]"
         :alt="product.name"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
         @error="imgBroken = true"
       />
       <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-300">
@@ -16,8 +16,7 @@
       <!-- Badges overlay -->
       <div class="absolute top-2 left-2 flex flex-col gap-1">
         <AppBadge v-if="product.isNew" variant="orange" size="xs">NUEVO</AppBadge>
-        <AppBadge v-if="product.stock === 0" variant="red" size="xs">AGOTADO</AppBadge>
-        <AppBadge v-else-if="product.stock <= 5" variant="orange" size="xs">Últimas {{ product.stock }} unid.</AppBadge>
+        <AppBadge v-if="product.stock > 0 && product.stock <= 5" variant="orange" size="xs">Últimas {{ product.stock }} unid.</AppBadge>
       </div>
       <!-- Quick view -->
       <RouterLink
@@ -63,11 +62,11 @@
       <!-- Spacer -->
       <div class="flex-1" />
 
-      <!-- Stock indicator -->
-      <div class="flex items-center gap-1.5 text-xs">
-        <div :class="['h-1.5 w-1.5 rounded-full', product.stock > 5 ? 'bg-emerald-500' : product.stock > 0 ? 'bg-amber-500' : 'bg-red-400']" />
-        <span :class="product.stock > 5 ? 'text-emerald-700' : product.stock > 0 ? 'text-amber-700' : 'text-red-500'">
-          {{ product.stock > 5 ? `${product.stock} en stock` : product.stock > 0 ? `Solo ${product.stock} en stock` : 'Agotado' }}
+      <!-- Stock indicator (only when stock is known) -->
+      <div v-if="product.stock > 0" class="flex items-center gap-1.5 text-xs">
+        <div :class="['h-1.5 w-1.5 rounded-full', product.stock > 5 ? 'bg-emerald-500' : 'bg-amber-500']" />
+        <span :class="product.stock > 5 ? 'text-emerald-700' : 'text-amber-700'">
+          {{ product.stock > 5 ? `${product.stock} en stock` : `Solo ${product.stock} en stock` }}
         </span>
       </div>
 
@@ -79,7 +78,7 @@
         </div>
         <button
           @click.prevent="handleAdd"
-          :disabled="product.stock === 0 || adding"
+          :disabled="adding"
           class="flex items-center gap-1.5 bg-brand-700 hover:bg-brand-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
         >
           <component :is="adding ? Check : ShoppingCart" class="h-3.5 w-3.5" />

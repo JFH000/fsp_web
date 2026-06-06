@@ -55,22 +55,6 @@
             <label class="field-label">SKU *</label>
             <input v-model="form.sku" type="text" class="field-input font-mono" placeholder="DAN-068Z3073" />
           </div>
-          <div>
-            <label class="field-label">ID de producto</label>
-            <div class="flex gap-2">
-              <input v-model="form.ref_code" type="text" class="field-input font-mono flex-1" placeholder="FSP-A3K7PQ" />
-              <button
-                type="button"
-                @click="form.ref_code = generateRefCode()"
-                class="flex-shrink-0 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5"
-                title="Generar ID aleatorio"
-              >
-                <Shuffle class="h-3.5 w-3.5" />
-                Generar
-              </button>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">Código de referencia interno. Opcional.</p>
-          </div>
           <div class="col-span-2">
             <label class="field-label">
               Slug (URL)
@@ -185,12 +169,39 @@
       <!-- ── Imágenes ────────────────────────────────────────── -->
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5">Imágenes</h2>
+
+        <!-- Drop / upload zone -->
+        <div
+          class="relative border-2 border-dashed rounded-xl p-6 text-center transition-colors mb-4"
+          :class="isDragging ? 'border-brand-400 bg-brand-50' : 'border-slate-200 hover:border-brand-300'"
+          @dragover.prevent="isDragging = true"
+          @dragleave.prevent="isDragging = false"
+          @drop.prevent="onDrop"
+        >
+          <input ref="fileInput" type="file" accept="image/*" multiple class="sr-only" @change="onFileChange" />
+          <ImagePlus class="h-8 w-8 mx-auto mb-2" :class="isDragging ? 'text-brand-500' : 'text-slate-300'" />
+          <p class="text-sm text-slate-500 mb-2">Arrastra imágenes aquí o</p>
+          <button
+            type="button"
+            :disabled="isUploading"
+            @click="fileInput?.click()"
+            class="px-4 py-1.5 bg-brand-700 hover:bg-brand-800 disabled:opacity-60 text-white text-xs font-semibold rounded-lg transition-colors"
+          >
+            {{ isUploading ? 'Subiendo…' : 'Seleccionar archivos' }}
+          </button>
+          <p class="text-xs text-slate-400 mt-2">JPEG, PNG o WebP · se convierten a WebP automáticamente</p>
+          <div v-if="isUploading" class="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
+            <Loader2 class="h-6 w-6 text-brand-600 animate-spin" />
+          </div>
+        </div>
+
+        <!-- URL manual -->
         <div class="flex gap-2 mb-4">
           <input
             v-model="imageInput"
             type="url"
             class="field-input flex-1"
-            placeholder="https://ejemplo.com/imagen.jpg"
+            placeholder="O pega una URL directa…"
             @keydown.enter.prevent="addImage"
           />
           <button
@@ -198,9 +209,14 @@
             @click="addImage"
             class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm rounded-xl transition-colors flex-shrink-0"
           >
-            Agregar
+            Agregar URL
           </button>
         </div>
+
+        <!-- Upload error -->
+        <p v-if="uploadError" class="text-xs text-red-500 mb-3">{{ uploadError }}</p>
+
+        <!-- Image list -->
         <div v-if="form.images.length" class="space-y-2">
           <div
             v-for="(img, i) in form.images"
@@ -210,7 +226,7 @@
             <img
               :src="img"
               alt=""
-              class="h-10 w-10 object-cover rounded-lg bg-slate-200 flex-shrink-0"
+              class="h-10 w-10 object-contain rounded-lg bg-white border border-slate-100 flex-shrink-0 p-0.5"
               @error="(e) => ((e.target as HTMLImageElement).style.display = 'none')"
             />
             <span class="text-xs text-slate-500 truncate flex-1 font-mono">{{ img }}</span>
@@ -219,7 +235,7 @@
             </button>
           </div>
         </div>
-        <p v-else class="text-sm text-slate-400">No hay imágenes. Agrega una URL arriba.</p>
+        <p v-else class="text-sm text-slate-400">Sin imágenes. Sube archivos o agrega una URL.</p>
       </div>
 
       <!-- ── Refrigerantes ───────────────────────────────────── -->
@@ -287,8 +303,9 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ChevronRight, Loader2, Save, Plus, X, Shuffle } from '@lucide/vue'
+import { ChevronRight, Loader2, Save, Plus, X, ImagePlus } from '@lucide/vue'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
+import { supabase } from '@/core/supabase/client'
 import {
   getAdminProduct,
   createProduct,
@@ -309,6 +326,10 @@ const pageError        = ref('')
 const slugTouched      = ref(false)
 const imageInput       = ref('')
 const formTop          = ref<HTMLElement | null>(null)
+const fileInput        = ref<HTMLInputElement | null>(null)
+const isUploading      = ref(false)
+const isDragging       = ref(false)
+const uploadError      = ref('')
 
 function showError(msg: string) {
   pageError.value = msg
@@ -336,11 +357,6 @@ const form = reactive<FormState>({
   images: [], specs: [], refrigerants: [],
 })
 
-function generateRefCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
-  return `FSP-${rand}`
-}
 
 const filteredCategories = computed(() => {
   if (!form.product_line_id) return catalogStore.categories
@@ -364,6 +380,58 @@ function addImage() {
   const url = imageInput.value.trim()
   if (url && !form.images.includes(url)) form.images.push(url)
   imageInput.value = ''
+}
+
+function toWebP(file: File): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width  = img.naturalWidth
+      canvas.height = img.naturalHeight
+      canvas.getContext('2d')!.drawImage(img, 0, 0)
+      canvas.toBlob(
+        blob => { URL.revokeObjectURL(url); blob ? resolve(blob) : reject(new Error('Conversión fallida')) },
+        'image/webp', 0.85,
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen')) }
+    img.src = url
+  })
+}
+
+async function uploadFiles(files: File[]) {
+  if (!supabase || !files.length) return
+  uploadError.value = ''
+  isUploading.value = true
+  try {
+    for (const file of files) {
+      const blob = await toWebP(file)
+      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.webp`
+      const { error } = await supabase.storage.from('product-images').upload(path, blob, { contentType: 'image/webp' })
+      if (error) throw new Error(error.message)
+      const { data } = supabase.storage.from('product-images').getPublicUrl(path)
+      if (data.publicUrl && !form.images.includes(data.publicUrl)) form.images.push(data.publicUrl)
+    }
+  } catch (e: unknown) {
+    uploadError.value = e instanceof Error ? e.message : 'Error al subir imagen'
+  } finally {
+    isUploading.value = false
+    isDragging.value  = false
+  }
+}
+
+function onFileChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files
+  if (files?.length) uploadFiles(Array.from(files))
+  ;(e.target as HTMLInputElement).value = ''
+}
+
+function onDrop(e: DragEvent) {
+  isDragging.value = false
+  const files = Array.from(e.dataTransfer?.files ?? []).filter(f => f.type.startsWith('image/'))
+  if (files.length) uploadFiles(files)
 }
 
 function addSpec() {

@@ -4,11 +4,8 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
         <!-- Brand -->
         <div class="md:col-span-1">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="w-8 h-8 bg-brand-700 rounded-lg flex items-center justify-center">
-              <Snowflake class="h-4 w-4 text-white" />
-            </div>
-            <span class="text-xl font-bold text-white">FS <span class="text-brand-400">Parts</span></span>
+          <div class="mb-4">
+            <img src="/logo.png" alt="FS Parts" class="h-12 w-auto bg-white rounded p-1" />
           </div>
           <p class="text-sm leading-relaxed">
             Distribuidor especializado en piezas y equipos para refrigeración, aire acondicionado y HVAC/R.
@@ -83,7 +80,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Snowflake, ShieldCheck } from '@lucide/vue'
+import { ShieldCheck } from '@lucide/vue'
 import { PRODUCT_LINES, BRANDS } from '@/modules/catalog/data/mock'
 
 const year = computed(() => new Date().getFullYear())

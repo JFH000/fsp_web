@@ -5,13 +5,8 @@
       <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center gap-2 sm:gap-4">
 
         <!-- Logo -->
-        <RouterLink to="/" class="flex-shrink-0 flex items-center gap-2">
-          <div class="w-8 h-8 bg-brand-700 rounded-lg flex items-center justify-center">
-            <Snowflake class="h-4 w-4 text-white" />
-          </div>
-          <span class="hidden sm:block text-xl font-bold text-slate-900 whitespace-nowrap">
-            FS <span class="text-brand-700">Parts</span>
-          </span>
+        <RouterLink to="/" class="flex-shrink-0">
+          <img src="/logo.png" alt="FS Parts" class="h-10 w-auto" />
         </RouterLink>
 
         <!-- Search bar — siempre visible -->
@@ -103,7 +98,7 @@
 import { ref, shallowRef, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useWindowScroll } from '@vueuse/core'
-import { Search, ShoppingCart, Calculator, ChevronRight, Snowflake, Wrench, Settings2, Gauge, Filter, Thermometer, Layers, Cpu } from '@lucide/vue'
+import { Search, ShoppingCart, Calculator, ChevronRight, Wrench, Settings2, Gauge, Filter, Thermometer, Layers, Cpu } from '@lucide/vue'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
 

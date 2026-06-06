@@ -70,7 +70,7 @@
         <!-- Results grid -->
         <div v-if="store.filteredProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           <ProductCard
-            v-for="product in store.filteredProducts"
+            v-for="product in store.paginatedProducts"
             :key="product.id"
             :product="product"
           />
@@ -86,6 +86,54 @@
           <button @click="store.resetFilters()" class="bg-brand-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
             Limpiar filtros
           </button>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="store.totalPages > 1" class="mt-8 flex flex-col items-center gap-3">
+          <!-- Info -->
+          <p class="text-xs text-slate-400">
+            Mostrando
+            {{ (store.currentPage - 1) * store.pageSize + 1 }}–{{ Math.min(store.currentPage * store.pageSize, store.filteredProducts.length) }}
+            de {{ store.filteredProducts.length }} productos
+          </p>
+
+          <!-- Controls -->
+          <div class="flex items-center gap-1">
+            <!-- Prev -->
+            <button
+              @click="store.setPage(store.currentPage - 1)"
+              :disabled="store.currentPage === 1"
+              class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft class="h-4 w-4" /> Anterior
+            </button>
+
+            <!-- Page numbers -->
+            <template v-for="page in pageNumbers" :key="page">
+              <span v-if="page === '...'" class="px-2 text-slate-400 text-sm select-none">…</span>
+              <button
+                v-else
+                @click="store.setPage(page as number)"
+                :class="[
+                  'w-9 h-9 text-sm rounded-lg border transition-colors font-medium',
+                  store.currentPage === page
+                    ? 'bg-brand-700 border-brand-700 text-white'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50',
+                ]"
+              >
+                {{ page }}
+              </button>
+            </template>
+
+            <!-- Next -->
+            <button
+              @click="store.setPage(store.currentPage + 1)"
+              :disabled="store.currentPage === store.totalPages"
+              class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Siguiente <ChevronRight class="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -116,7 +164,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { ChevronRight, SlidersHorizontal, ArrowUpDown, X, PackageSearch } from '@lucide/vue'
+import { ChevronRight, ChevronLeft, SlidersHorizontal, ArrowUpDown, X, PackageSearch } from '@lucide/vue'
 import { useCatalogStore } from '../stores/catalog.store'
 import ProductCard from '../components/ProductCard.vue'
 import FilterSidebar from '../components/FilterSidebar.vue'
@@ -153,6 +201,20 @@ const pageTitle = computed(() =>
     ? `Resultados para "${store.filters.search}"`
     : activeLineName.value || 'Catálogo de Productos'
 )
+
+// Build the page number list with ellipsis for large ranges
+const pageNumbers = computed(() => {
+  const total   = store.totalPages
+  const current = store.currentPage
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+
+  const pages: (number | '...')[] = [1]
+  if (current > 3)          pages.push('...')
+  for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) pages.push(p)
+  if (current < total - 2)  pages.push('...')
+  pages.push(total)
+  return pages
+})
 
 const activeChips = computed(() => {
   const chips: { label: string; remove: () => void }[] = []

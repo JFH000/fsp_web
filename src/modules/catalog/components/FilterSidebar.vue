@@ -73,8 +73,8 @@
       </label>
     </FilterSection>
 
-    <!-- Price range -->
-    <FilterSection title="Precio" :count="0">
+    <!-- Price range (only when products have real prices) -->
+    <FilterSection v-if="store.maxPrice > 0" title="Precio" :count="0">
       <div class="px-1">
         <input
           type="range"

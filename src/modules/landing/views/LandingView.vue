@@ -196,11 +196,10 @@ import {
 } from '@lucide/vue'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
 import ProductCard from '@/modules/catalog/components/ProductCard.vue'
-import { PRODUCT_LINES } from '@/modules/catalog/data/mock'
 
 const router       = useRouter()
 const catalogStore = useCatalogStore()
-const productLines = PRODUCT_LINES
+const productLines = catalogStore.productLines
 const searchQuery  = ref('')
 
 function handleSearch() {

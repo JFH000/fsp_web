@@ -7,13 +7,10 @@
     >
       <!-- Logo + toggle -->
       <div class="flex items-center h-16 border-b border-slate-800 flex-shrink-0"
-           :class="collapsed ? 'justify-center px-0' : 'gap-2.5 px-4'">
-        <div class="w-7 h-7 bg-brand-700 rounded-lg flex items-center justify-center flex-shrink-0">
-          <Snowflake class="h-3.5 w-3.5 text-white" />
-        </div>
+           :class="collapsed ? 'justify-center px-2' : 'gap-2.5 px-4'">
+        <img src="/logo.png" alt="FS Parts" :class="collapsed ? 'h-8 w-auto' : 'h-9 w-auto'" class="rounded flex-shrink-0 bg-white p-0.5" />
         <div v-if="!collapsed" class="leading-none flex-1 min-w-0">
-          <span class="text-sm font-bold text-white">FS <span class="text-brand-400">Parts</span></span>
-          <p class="text-[10px] text-slate-500 mt-0.5">Panel admin</p>
+          <p class="text-[10px] text-slate-500">Panel admin</p>
         </div>
         <button
           v-if="!collapsed"
@@ -93,7 +90,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Snowflake, Package, LogOut, ExternalLink, PanelLeftClose, PanelLeftOpen } from '@lucide/vue'
+import { Package, LogOut, ExternalLink, PanelLeftClose, PanelLeftOpen } from '@lucide/vue'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
 
 const authStore = useAuthStore()

@@ -85,7 +85,8 @@ router.beforeEach(async (to) => {
   if (!to.meta.requiresAuth) return true
   const authStore = useAuthStore()
   if (!authStore.isReady) await authStore.init()
-  if (!authStore.user) return { name: 'admin-login' }
+  if (!authStore.user)    return { name: 'admin-login' }
+  if (!authStore.isAdmin) return { name: 'landing' }
 })
 
 export default router
