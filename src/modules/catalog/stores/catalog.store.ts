@@ -14,9 +14,10 @@ export const useCatalogStore = defineStore('catalog', () => {
   const allRefrigerants = ref<string[]>(REFRIGERANTS)
   const isLoading       = ref(false)
 
-  const maxPrice = computed(() =>
-    allProducts.value.length ? Math.max(...allProducts.value.map(p => p.price)) : MAX_PRICE
-  )
+  const maxPrice = computed(() => {
+    const prices = allProducts.value.map(p => p.priceCop ?? 0).filter(v => v > 0)
+    return prices.length ? Math.max(...prices) : MAX_PRICE
+  })
 
   // ── Filters & sort ────────────────────────────────────────────────────────────
   const filters = ref<FilterState>({
@@ -97,11 +98,13 @@ export const useCatalogStore = defineStore('catalog', () => {
     if (f.categoryIds.length)    list = list.filter(p => f.categoryIds.includes(p.category.id))
     if (f.refrigerants.length)   list = list.filter(p => p.refrigerants.some(r => f.refrigerants.includes(r)))
     if (f.inStockOnly)           list = list.filter(p => p.stock > 0)
-    list = list.filter(p => p.price >= f.priceRange[0] && p.price <= f.priceRange[1])
+    if (f.priceRange[1] < maxPrice.value) {
+      list = list.filter(p => (p.priceCop ?? 0) >= f.priceRange[0] && (p.priceCop ?? 0) <= f.priceRange[1])
+    }
 
     switch (sortBy.value) {
-      case 'price-asc':  list.sort((a, b) => a.price - b.price); break
-      case 'price-desc': list.sort((a, b) => b.price - a.price); break
+      case 'price-asc':  list.sort((a, b) => (a.priceCop ?? 0) - (b.priceCop ?? 0)); break
+      case 'price-desc': list.sort((a, b) => (b.priceCop ?? 0) - (a.priceCop ?? 0)); break
       case 'name-asc':   list.sort((a, b) => a.name.localeCompare(b.name)); break
       case 'newest':     list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)); break
     }
@@ -163,7 +166,7 @@ export const useCatalogStore = defineStore('catalog', () => {
       allRefrigerants.value = refs.length ? refs : REFRIGERANTS
 
       // Update price range ceiling only when products actually have prices
-      const maxLoaded = Math.max(...products.map(p => p.price))
+      const maxLoaded = Math.max(...products.map(p => p.priceCop ?? 0))
       if (maxLoaded > 0) filters.value.priceRange = [0, maxLoaded]
     } finally {
       isLoading.value = false

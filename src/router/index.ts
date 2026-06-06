@@ -72,6 +72,16 @@ const router = createRouter({
           name: 'admin-product-edit',
           component: () => import('@/modules/admin/views/AdminProductFormView.vue'),
         },
+        {
+          path: 'catalog',
+          name: 'admin-catalog',
+          component: () => import('@/modules/admin/views/AdminCatalogView.vue'),
+        },
+        {
+          path: 'settings',
+          name: 'admin-settings',
+          component: () => import('@/modules/admin/views/AdminSettingsView.vue'),
+        },
       ],
     },
   ],

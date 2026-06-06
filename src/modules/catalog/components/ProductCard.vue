@@ -73,8 +73,17 @@
       <!-- Price + Action -->
       <div class="flex items-center justify-between pt-1 border-t border-slate-100 mt-1">
         <div>
-          <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(product.price) }}</p>
-          <p class="text-[10px] text-slate-400">IVA incluido</p>
+          <template v-if="product.priceCop != null">
+            <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(product.priceCop) }}</p>
+            <p class="text-[10px] text-slate-400">COP · IVA incluido</p>
+          </template>
+          <template v-else-if="product.priceUsd != null">
+            <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(product.priceUsd) }}</p>
+            <p class="text-[10px] text-slate-400">USD</p>
+          </template>
+          <template v-else>
+            <p class="text-sm font-semibold text-slate-400">Consultar precio</p>
+          </template>
         </div>
         <button
           @click.prevent="handleAdd"

@@ -12,6 +12,16 @@
     </div>
 
     <template v-else>
+      <!-- Admin edit shortcut -->
+      <RouterLink
+        v-if="auth.isAdmin"
+        :to="`/admin/products/${route.params.id}/edit`"
+        class="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg transition-colors"
+      >
+        <Pencil class="h-4 w-4" />
+        Editar producto
+      </RouterLink>
+
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6">
         <RouterLink to="/" class="hover:text-brand-600">Inicio</RouterLink>
@@ -85,8 +95,17 @@
 
           <!-- Price -->
           <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-            <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.price) }}</p>
-            <p class="text-xs text-slate-400 mb-4">Precio al público · IVA incluido</p>
+            <template v-if="product.priceCop != null">
+              <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.priceCop) }}</p>
+              <p class="text-xs text-slate-400 mb-4">COP · IVA incluido</p>
+            </template>
+            <template v-else-if="product.priceUsd != null">
+              <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.priceUsd) }}</p>
+              <p class="text-xs text-slate-400 mb-4">USD</p>
+            </template>
+            <template v-else>
+              <p class="text-xl font-semibold text-slate-400 mb-4">Consultar precio</p>
+            </template>
 
             <!-- Stock (only when stock is known) -->
             <div v-if="product.stock > 0" class="flex items-center gap-2 mb-5">
@@ -140,15 +159,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch } from '@lucide/vue'
+import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch, Pencil } from '@lucide/vue'
 import { useCatalogStore } from '../stores/catalog.store'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
+import { useAuthStore } from '@/modules/auth/stores/auth.store'
 import { formatCurrency } from '@/shared/utils/currency'
 import AppBadge from '@/shared/components/ui/AppBadge.vue'
 
 const route    = useRoute()
 const catalog  = useCatalogStore()
 const cart     = useCartStore()
+const auth     = useAuthStore()
 
 const product    = computed(() => catalog.getById(route.params.id as string))
 const activeImage = ref(0)

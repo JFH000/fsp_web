@@ -40,9 +40,12 @@ export interface Product {
   brand: Brand
   category: Category
   productLine: ProductLine
-  price: number
-  priceDistributor?: number
-  priceTechnician?: number
+  priceUsd?: number
+  priceCop?: number
+  priceWs1?: number
+  priceWs2?: number
+  priceWs3?: number
+  priceWs4?: number
   stock: number
   isFeatured: boolean
   isNew?: boolean

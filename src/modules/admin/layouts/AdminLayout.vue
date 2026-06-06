@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Package, LogOut, ExternalLink, PanelLeftClose, PanelLeftOpen } from '@lucide/vue'
+import { Package, Layers, Settings, LogOut, ExternalLink, PanelLeftClose, PanelLeftOpen } from '@lucide/vue'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
 
 const authStore = useAuthStore()
@@ -100,7 +100,9 @@ const router    = useRouter()
 const collapsed = ref(false)
 
 const navItems = [
-  { to: '/admin/products', label: 'Productos', icon: Package },
+  { to: '/admin/products', label: 'Productos',     icon: Package  },
+  { to: '/admin/catalog',  label: 'Catálogo',      icon: Layers   },
+  { to: '/admin/settings', label: 'CSV',           icon: Settings },
 ]
 
 async function handleSignOut() {

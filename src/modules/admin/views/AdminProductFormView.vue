@@ -108,31 +108,33 @@
       <!-- ── Precios y stock ─────────────────────────────────── -->
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5">Precios y stock</h2>
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-3 gap-4 mb-4">
           <div>
-            <label class="field-label">Precio público *</label>
+            <label class="field-label">Precio USD</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
-              <input v-model="form.price" type="number" min="0" step="0.01" class="field-input pl-7" placeholder="0.00" />
+              <input v-model="form.price_usd" type="number" min="0" step="0.01" class="field-input has-prefix" placeholder="—" />
             </div>
           </div>
           <div>
-            <label class="field-label">Precio distribuidor</label>
+            <label class="field-label">Precio COP</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
-              <input v-model="form.price_distributor" type="number" min="0" step="0.01" class="field-input pl-7" placeholder="0.00" />
-            </div>
-          </div>
-          <div>
-            <label class="field-label">Precio técnico</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
-              <input v-model="form.price_technician" type="number" min="0" step="0.01" class="field-input pl-7" placeholder="0.00" />
+              <input v-model="form.price_cop" type="number" min="0" step="0.01" class="field-input has-prefix" placeholder="—" />
             </div>
           </div>
           <div>
             <label class="field-label">Stock</label>
             <input v-model="form.stock" type="number" min="0" class="field-input" placeholder="0" />
+          </div>
+        </div>
+        <div class="grid grid-cols-4 gap-4">
+          <div v-for="tier in (['ws1','ws2','ws3','ws4'] as const)" :key="tier">
+            <label class="field-label">{{ tier.toUpperCase() }}</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
+              <input v-model="form[`price_${tier}`]" type="number" min="0" step="0.01" class="field-input has-prefix" placeholder="—" />
+            </div>
           </div>
         </div>
 
@@ -338,9 +340,10 @@ function showError(msg: string) {
 
 type SpecRow = { key: string; value: string; unit: string; group: string }
 interface FormState {
-  sku: string; name: string; slug: string; description: string; ref_code: string
+  sku: string; name: string; slug: string; description: string
   brand_id: number | null; category_id: number | null; product_line_id: number | null
-  price: number | ''; price_distributor: number | ''; price_technician: number | ''
+  price_usd: number | ''; price_cop: number | ''
+  price_ws1: number | ''; price_ws2: number | ''; price_ws3: number | ''; price_ws4: number | ''
   stock: number | ''
   is_featured: boolean; is_new: boolean
   images: string[]
@@ -349,9 +352,10 @@ interface FormState {
 }
 
 const form = reactive<FormState>({
-  sku: '', name: '', slug: '', description: '', ref_code: '',
+  sku: '', name: '', slug: '', description: '',
   brand_id: null, category_id: null, product_line_id: null,
-  price: '', price_distributor: '', price_technician: '',
+  price_usd: '', price_cop: '',
+  price_ws1: '', price_ws2: '', price_ws3: '', price_ws4: '',
   stock: '',
   is_featured: false, is_new: false,
   images: [], specs: [], refrigerants: [],
@@ -443,23 +447,25 @@ onMounted(async () => {
   isLoadingProduct.value = true
   try {
     const p = await getAdminProduct(route.params.id as string)
-    form.sku              = p.sku
-    form.name             = p.name
-    form.slug             = p.slug
-    form.description      = p.description
-    form.ref_code         = p.ref_code ?? ''
-    form.brand_id         = p.brand_id
-    form.category_id      = p.category_id
-    form.product_line_id  = p.product_line_id
-    form.price            = p.price
-    form.price_distributor = p.price_distributor ?? ''
-    form.price_technician = p.price_technician ?? ''
-    form.stock            = p.stock
-    form.is_featured      = p.is_featured
-    form.is_new           = p.is_new
-    form.images           = [...p.images]
-    form.refrigerants     = [...p.refrigerants]
-    form.specs            = p.specs.map(s => ({
+    form.sku             = p.sku
+    form.name            = p.name
+    form.slug            = p.slug
+    form.description     = p.description
+    form.brand_id        = p.brand_id
+    form.category_id     = p.category_id
+    form.product_line_id = p.product_line_id
+    form.price_usd       = p.price_usd  ?? ''
+    form.price_cop       = p.price_cop  ?? ''
+    form.price_ws1       = p.price_ws1  ?? ''
+    form.price_ws2       = p.price_ws2  ?? ''
+    form.price_ws3       = p.price_ws3  ?? ''
+    form.price_ws4       = p.price_ws4  ?? ''
+    form.stock           = p.stock
+    form.is_featured     = p.is_featured
+    form.is_new          = p.is_new
+    form.images          = [...p.images]
+    form.refrigerants    = [...p.refrigerants]
+    form.specs           = p.specs.map(s => ({
       key: s.key, value: s.value, unit: s.unit ?? '', group: s.group ?? '',
     }))
     slugTouched.value = true
@@ -472,34 +478,37 @@ onMounted(async () => {
 
 async function handleSave() {
   pageError.value = ''
-  if (!form.name || !form.sku || form.price === '') {
-    showError('Nombre, SKU y precio son obligatorios.')
+  if (!form.name || !form.sku) {
+    showError('Nombre y SKU son obligatorios.')
     return
   }
   isSaving.value = true
+  const toNum = (v: number | '') => v !== '' ? Number(v) : null
   try {
     const payload: ProductPayload = {
-      sku:               form.sku,
-      name:              form.name,
-      slug:              form.slug || slugify(form.name),
-      description:       form.description,
-      ref_code:          form.ref_code.trim() || null,
-      brand_id:          form.brand_id,
-      category_id:       form.category_id,
-      product_line_id:   form.product_line_id,
-      price:             Number(form.price),
-      price_distributor: form.price_distributor !== '' ? Number(form.price_distributor) : null,
-      price_technician:  form.price_technician  !== '' ? Number(form.price_technician)  : null,
-      stock:             Number(form.stock) || 0,
-      is_featured:       form.is_featured,
-      is_new:            form.is_new,
-      images:            form.images,
-      specs:             form.specs.filter(s => s.key).map(s => ({
+      sku:             form.sku,
+      name:            form.name,
+      slug:            form.slug || slugify(form.name),
+      description:     form.description,
+      brand_id:        form.brand_id,
+      category_id:     form.category_id,
+      product_line_id: form.product_line_id,
+      price_usd:       toNum(form.price_usd),
+      price_cop:       toNum(form.price_cop),
+      price_ws1:       toNum(form.price_ws1),
+      price_ws2:       toNum(form.price_ws2),
+      price_ws3:       toNum(form.price_ws3),
+      price_ws4:       toNum(form.price_ws4),
+      stock:           Number(form.stock) || 0,
+      is_featured:     form.is_featured,
+      is_new:          form.is_new,
+      images:          form.images,
+      specs:           form.specs.filter(s => s.key).map(s => ({
         key: s.key, value: s.value,
         ...(s.unit  ? { unit: s.unit }   : {}),
         ...(s.group ? { group: s.group } : {}),
       })),
-      refrigerants:      form.refrigerants,
+      refrigerants:    form.refrigerants,
     }
 
     if (isEditMode.value) {
@@ -525,5 +534,8 @@ async function handleSave() {
 .field-input {
   @apply w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-300
          focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all;
+}
+.field-input.has-prefix {
+  padding-left: 1.75rem;
 }
 </style>

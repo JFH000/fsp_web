@@ -100,7 +100,9 @@
 
             <!-- Precio -->
             <td class="px-4 py-3.5">
-              <span class="text-sm font-semibold text-slate-700">${{ p.price.toFixed(2) }}</span>
+              <span v-if="p.price_cop != null" class="text-sm font-semibold text-slate-700">${{ p.price_cop.toFixed(2) }} <span class="text-xs text-slate-400 font-normal">COP</span></span>
+              <span v-else-if="p.price_usd != null" class="text-sm font-semibold text-slate-700">${{ p.price_usd.toFixed(2) }} <span class="text-xs text-slate-400 font-normal">USD</span></span>
+              <span v-else class="text-xs text-slate-400">—</span>
             </td>
 
             <!-- Stock -->

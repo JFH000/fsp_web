@@ -38,9 +38,12 @@ type DbProduct = {
   name: string
   slug: string
   description: string
-  price: number
-  price_distributor: number | null
-  price_technician: number | null
+  price_usd: number | null
+  price_cop: number | null
+  price_ws1: number | null
+  price_ws2: number | null
+  price_ws3: number | null
+  price_ws4: number | null
   stock: number
   is_featured: boolean
   is_new: boolean
@@ -91,23 +94,26 @@ const FALLBACK_LINE: ProductLine    = { id: 0, code: '---', name: 'Sin Línea', 
 
 function toProduct(r: DbProduct): Product {
   return {
-    id:               r.id,
-    sku:              r.sku,
-    name:             r.name,
-    slug:             r.slug,
-    description:      r.description,
-    brand:            r.brand        ? toBrand(r.brand)           : FALLBACK_BRAND,
-    category:         r.category     ? toCategory(r.category)     : FALLBACK_CATEGORY,
-    productLine:      r.product_line ? toProductLine(r.product_line) : FALLBACK_LINE,
-    price:            r.price,
-    priceDistributor: r.price_distributor ?? undefined,
-    priceTechnician:  r.price_technician  ?? undefined,
-    stock:            r.stock,
-    isFeatured:       r.is_featured,
-    isNew:            r.is_new,
-    images:           r.images,
-    specs:            r.specs,
-    refrigerants:     r.refrigerants,
+    id:          r.id,
+    sku:         r.sku,
+    name:        r.name,
+    slug:        r.slug,
+    description: r.description,
+    brand:       r.brand        ? toBrand(r.brand)               : FALLBACK_BRAND,
+    category:    r.category     ? toCategory(r.category)         : FALLBACK_CATEGORY,
+    productLine: r.product_line ? toProductLine(r.product_line)  : FALLBACK_LINE,
+    priceUsd:    r.price_usd  ?? undefined,
+    priceCop:    r.price_cop  ?? undefined,
+    priceWs1:    r.price_ws1  ?? undefined,
+    priceWs2:    r.price_ws2  ?? undefined,
+    priceWs3:    r.price_ws3  ?? undefined,
+    priceWs4:    r.price_ws4  ?? undefined,
+    stock:       r.stock,
+    isFeatured:  r.is_featured,
+    isNew:       r.is_new,
+    images:      r.images,
+    specs:       r.specs,
+    refrigerants: r.refrigerants,
   }
 }
 
