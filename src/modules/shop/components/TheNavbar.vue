@@ -51,6 +51,21 @@
             <Calculator class="h-4 w-4" />
             <span>Calc. Térmica</span>
           </RouterLink>
+          <!-- Cart — siempre visible -->
+          <button
+            @click="cartStore.openDrawer()"
+            class="relative flex items-center gap-1.5 sm:gap-2 bg-brand-700 hover:bg-brand-800 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-colors"
+          >
+            <ShoppingCart class="h-4 w-4" />
+            <span class="hidden sm:inline">Carrito</span>
+            <span
+              v-if="cartStore.totalItems > 0"
+              class="absolute -top-2 -right-2 bg-accent-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center"
+            >
+              {{ cartStore.totalItems > 99 ? '99+' : cartStore.totalItems }}
+            </span>
+          </button>
+
           <!-- Auth -->
           <RouterLink
             v-if="!authStore.isAuthenticated"
@@ -68,21 +83,6 @@
           >
             {{ userInitials }}
           </RouterLink>
-
-          <!-- Cart — siempre visible -->
-          <button
-            @click="cartStore.openDrawer()"
-            class="relative flex items-center gap-1.5 sm:gap-2 bg-brand-700 hover:bg-brand-800 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-colors"
-          >
-            <ShoppingCart class="h-4 w-4" />
-            <span class="hidden sm:inline">Carrito</span>
-            <span
-              v-if="cartStore.totalItems > 0"
-              class="absolute -top-2 -right-2 bg-accent-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center"
-            >
-              {{ cartStore.totalItems > 99 ? '99+' : cartStore.totalItems }}
-            </span>
-          </button>
         </div>
       </div>
     </nav>
