@@ -68,7 +68,7 @@ import { useAuthStore } from '@/modules/auth/stores/auth.store'
 import { useAuthModal } from '../composables/useAuthModal'
 
 const authStore          = useAuthStore()
-const { switchTo, close } = useAuthModal()
+const { switchTo } = useAuthModal()
 
 const email    = ref('')
 const password = ref('')
