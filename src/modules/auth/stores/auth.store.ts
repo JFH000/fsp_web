@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/core/supabase/client'
 import type { UserProfile } from '@/shared/types'
+import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
 
 export const useAuthStore = defineStore('auth', () => {
   const user    = ref<User | null>(null)
@@ -58,9 +59,15 @@ export const useAuthStore = defineStore('auth', () => {
           if (!isReady.value) { isReady.value = true; resolve() }
         }
         if (user.value) {
-          fetchProfile(user.value.id).finally(resolveReady)
+          const favStore = useFavoritesStore()
+          Promise.all([
+            fetchProfile(user.value.id),
+            favStore.fetchFavorites(user.value.id),
+          ]).finally(resolveReady)
         } else {
           profile.value = null
+          const favStore = useFavoritesStore()
+          favStore.clearFavorites()
           resolveReady()
         }
       })
