@@ -5,7 +5,10 @@
         <!-- Brand -->
         <div class="md:col-span-1">
           <div class="mb-4">
-            <img src="/logo.png" alt="FS Parts" class="h-12 w-auto bg-white rounded p-1" />
+            <div class="inline-flex items-baseline gap-1.5">
+              <span class="text-2xl font-black text-white tracking-tight">FS</span>
+              <span class="text-2xl font-black text-brand-400 tracking-tight">Parts</span>
+            </div>
           </div>
           <p class="text-sm leading-relaxed">
             Distribuidor especializado en piezas y equipos para refrigeración, aire acondicionado y HVAC/R.

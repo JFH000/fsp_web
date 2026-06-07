@@ -146,7 +146,7 @@
         />
         <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="text-center md:text-left">
-            <div class="inline-flex items-center gap-2 bg-accent-500/20 border border-accent-400/30 rounded-full px-4 py-1.5 text-accent-300 text-sm mb-4">
+            <div class="inline-flex items-center gap-2 bg-white/20 border border-white/30 rounded-full px-4 py-1.5 text-white text-sm font-semibold mb-4">
               <Zap class="h-3.5 w-3.5" />
               Herramienta premium
             </div>
