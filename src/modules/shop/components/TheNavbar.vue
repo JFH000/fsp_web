@@ -67,22 +67,15 @@
           </button>
 
           <!-- Auth -->
-          <RouterLink
+          <button
             v-if="!authStore.isAuthenticated"
-            to="/login"
+            @click="authModal.open('login')"
             class="hidden sm:flex items-center gap-1.5 text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap font-medium"
           >
             <User class="h-4 w-4" />
             Ingresar
-          </RouterLink>
-          <RouterLink
-            v-else
-            to="/me"
-            class="hidden sm:flex items-center justify-center w-8 h-8 bg-brand-700 hover:bg-brand-800 text-white text-xs font-extrabold rounded-full transition-colors"
-            :title="authStore.profile?.full_name || authStore.user?.email || 'Mi perfil'"
-          >
-            {{ userInitials }}
-          </RouterLink>
+          </button>
+          <ProfileDropdown v-else class="hidden sm:block" />
         </div>
       </div>
     </nav>
@@ -113,24 +106,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, watch, computed } from 'vue'
+import { ref, shallowRef, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useWindowScroll } from '@vueuse/core'
 import { Search, ShoppingCart, Calculator, ChevronRight, Wrench, Settings2, Gauge, Filter, Thermometer, Layers, Cpu, User } from '@lucide/vue'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import { useAuthModal } from '@/modules/auth/composables/useAuthModal'
+import ProfileDropdown from '@/modules/auth/components/ProfileDropdown.vue'
 
 const cartStore    = useCartStore()
 const catalogStore = useCatalogStore()
 const authStore    = useAuthStore()
+const authModal    = useAuthModal()
 
-const userInitials = computed(() => {
-  const name = authStore.profile?.full_name ?? authStore.user?.email ?? '?'
-  return name.split(/[\s@]/).map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()
-})
-const router       = useRouter()
-const route        = useRoute()
+const router = useRouter()
+const route  = useRoute()
 
 const { y } = useWindowScroll()
 const scrolled = shallowRef(false)
