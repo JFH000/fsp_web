@@ -79,7 +79,7 @@
             v-else
             to="/me"
             class="hidden sm:flex items-center justify-center w-8 h-8 bg-brand-700 hover:bg-brand-800 text-white text-xs font-extrabold rounded-full transition-colors"
-            :title="authStore.profile?.fullName || authStore.user?.email || 'Mi perfil'"
+            :title="authStore.profile?.full_name || authStore.user?.email || 'Mi perfil'"
           >
             {{ userInitials }}
           </RouterLink>
@@ -126,7 +126,7 @@ const catalogStore = useCatalogStore()
 const authStore    = useAuthStore()
 
 const userInitials = computed(() => {
-  const name = authStore.profile?.fullName ?? authStore.user?.email ?? '?'
+  const name = authStore.profile?.full_name ?? authStore.user?.email ?? '?'
   return name.split(/[\s@]/).map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()
 })
 const router       = useRouter()

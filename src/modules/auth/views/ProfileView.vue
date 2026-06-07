@@ -18,7 +18,7 @@
           {{ initials }}
         </div>
         <p class="text-white font-semibold text-sm leading-tight truncate">
-          {{ authStore.profile?.fullName || authStore.user?.email || 'Usuario' }}
+          {{ authStore.profile?.full_name || authStore.user?.email || 'Usuario' }}
         </p>
         <p class="text-slate-400 text-xs mt-0.5 truncate">{{ authStore.user?.email }}</p>
         <span class="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded-full" :class="roleBadge">
@@ -84,8 +84,8 @@
             <!-- Nombre -->
             <div>
               <label class="field-label">Nombre completo</label>
-              <input v-if="editing" v-model="form.fullName" type="text" class="field-input" placeholder="Tu nombre" />
-              <div v-else class="field-readonly">{{ authStore.profile?.fullName || '—' }}</div>
+              <input v-if="editing" v-model="form.full_name" type="text" class="field-input" placeholder="Tu nombre" />
+              <div v-else class="field-readonly">{{ authStore.profile?.full_name || '—' }}</div>
             </div>
 
             <!-- Teléfono -->
@@ -132,10 +132,10 @@ const authStore = useAuthStore()
 const editing = ref(false)
 const saving  = ref(false)
 const saved   = ref(false)
-const form    = reactive({ fullName: '', phone: '', company: '' })
+const form    = reactive({ full_name: '', phone: '', company: '' })
 
 const initials = computed(() => {
-  const name = authStore.profile?.fullName ?? authStore.user?.email ?? '?'
+  const name = authStore.profile?.full_name ?? authStore.user?.email ?? '?'
   return name.split(/[\s@]/).map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()
 })
 
@@ -154,7 +154,7 @@ const roleLabel = computed(() => ({
 }[authStore.profile?.role ?? 'customer'] ?? 'Cliente'))
 
 function startEdit() {
-  form.fullName = authStore.profile?.fullName ?? ''
+  form.full_name = authStore.profile?.full_name ?? ''
   form.phone    = authStore.profile?.phone    ?? ''
   form.company  = authStore.profile?.company  ?? ''
   editing.value = true
@@ -168,7 +168,7 @@ async function saveEdit() {
   saving.value = true
   try {
     await authStore.updateProfile({
-      fullName: form.fullName || undefined,
+      full_name: form.full_name || undefined,
       phone:    form.phone    || undefined,
       company:  form.company  || undefined,
     })

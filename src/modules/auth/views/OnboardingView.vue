@@ -29,7 +29,7 @@
         <form @submit.prevent="handleContinue" class="space-y-4">
           <div>
             <label class="field-label">Nombre completo <span class="text-red-400">*</span></label>
-            <input v-model="form.fullName" type="text" required
+            <input v-model="form.full_name" type="text" required
               placeholder="Juan Pérez" class="field-input" />
           </div>
           <div>
@@ -67,7 +67,7 @@ import { useAuthStore } from '@/modules/auth/stores/auth.store'
 const router    = useRouter()
 const authStore = useAuthStore()
 
-const form = reactive({ fullName: '', phone: '', company: '' })
+const form = reactive({ full_name: '', phone: '', company: '' })
 const loading = ref(false)
 const error   = ref<string | null>(null)
 
@@ -76,7 +76,7 @@ async function handleContinue() {
   loading.value = true
   try {
     await authStore.updateProfile({
-      fullName: form.fullName,
+      full_name: form.full_name,
       phone:    form.phone   || undefined,
       company:  form.company || undefined,
     })

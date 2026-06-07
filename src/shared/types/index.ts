@@ -63,11 +63,11 @@ export type UserRole = 'customer' | 'technician' | 'distributor' | 'admin'
 
 export interface UserProfile {
   id: string
-  fullName: string
+  full_name: string | null
   email: string
-  phone?: string
+  phone: string | null
   role: UserRole
-  company?: string
+  company: string | null
 }
 
 export interface FilterState {
