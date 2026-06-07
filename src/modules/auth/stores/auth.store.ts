@@ -36,12 +36,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function updateProfile(data: Partial<Omit<UserProfile, 'id' | 'email' | 'role'>>): Promise<void> {
     if (!supabase || !user.value) return
-    await supabase.from('user_profiles').upsert({
+    if (!user.value.email) throw new Error('No hay email asociado a este usuario')
+    const { error } = await supabase.from('user_profiles').upsert({
       id:    user.value.id,
-      email: user.value.email!,
+      email: user.value.email,
       role:  profile.value?.role ?? 'customer',
       ...data,
     })
+    if (error) throw new Error(error.message)
     await fetchProfile(user.value.id)
   }
 
