@@ -33,7 +33,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
       } else {
         await insertFavorite(userId, productId)
       }
-    } catch {
+    } catch (err) {
+      console.error('[favorites] toggleFavorite failed, reverting:', err)
       // Revert on error
       if (wasFavorite) {
         favoriteIds.value.add(productId)
