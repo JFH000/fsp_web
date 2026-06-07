@@ -2,14 +2,16 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/core/supabase/client'
+import type { UserProfile } from '@/shared/types'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user     = ref<User | null>(null)
-  const role     = ref<string | null>(null)
-  const isReady  = ref(false)
+  const user    = ref<User | null>(null)
+  const profile = ref<UserProfile | null>(null)
+  const isReady = ref(false)
 
   const isAuthenticated = computed(() => !!user.value)
-  const isAdmin         = computed(() => role.value === 'admin')
+  const isAdmin         = computed(() => profile.value?.role === 'admin')
+  const role            = computed(() => profile.value?.role ?? null)
 
   let initPromise: Promise<void> | null = null
 
@@ -18,18 +20,29 @@ export const useAuthStore = defineStore('auth', () => {
     return initPromise
   }
 
-  async function fetchRole(userId: string): Promise<void> {
+  async function fetchProfile(userId: string): Promise<void> {
     if (!supabase) return
     try {
       const { data } = await supabase
         .from('user_profiles')
-        .select('role')
+        .select('*')
         .eq('id', userId)
         .single()
-      role.value = data?.role ?? null
+      profile.value = data ?? null
     } catch {
-      role.value = null
+      profile.value = null
     }
+  }
+
+  async function updateProfile(data: Partial<Omit<UserProfile, 'id' | 'email' | 'role'>>): Promise<void> {
+    if (!supabase || !user.value) return
+    await supabase.from('user_profiles').upsert({
+      id:    user.value.id,
+      email: user.value.email!,
+      role:  profile.value?.role ?? 'customer',
+      ...data,
+    })
+    await fetchProfile(user.value.id)
   }
 
   function _init(): Promise<void> {
@@ -37,20 +50,16 @@ export const useAuthStore = defineStore('auth', () => {
       isReady.value = true
       return Promise.resolve()
     }
-
     return new Promise<void>((resolve) => {
       supabase!.auth.onAuthStateChange((_event, session) => {
         user.value = session?.user ?? null
         const resolveReady = () => {
-          if (!isReady.value) {
-            isReady.value = true
-            resolve()
-          }
+          if (!isReady.value) { isReady.value = true; resolve() }
         }
         if (user.value) {
-          fetchRole(user.value.id).finally(resolveReady)
+          fetchProfile(user.value.id).finally(resolveReady)
         } else {
-          role.value = null
+          profile.value = null
           resolveReady()
         }
       })
@@ -72,8 +81,12 @@ export const useAuthStore = defineStore('auth', () => {
   async function signOut() {
     if (!supabase) return
     await supabase.auth.signOut()
-    role.value = null
+    profile.value = null
   }
 
-  return { user, role, isReady, isAuthenticated, isAdmin, init, signIn, signUp, signOut }
+  return {
+    user, profile, role, isReady,
+    isAuthenticated, isAdmin,
+    init, signIn, signUp, signOut, updateProfile,
+  }
 })
