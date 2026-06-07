@@ -18,6 +18,17 @@
         <AppBadge v-if="product.isNew" variant="orange" size="xs">NUEVO</AppBadge>
         <AppBadge v-if="product.stock > 0 && product.stock <= 5" variant="orange" size="xs">Últimas {{ product.stock }} unid.</AppBadge>
       </div>
+      <!-- Favorite button -->
+      <button
+        @click.stop.prevent="handleFavorite"
+        class="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
+        :title="favoritesStore.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+      >
+        <Star
+          class="h-4 w-4 transition-colors"
+          :class="favoritesStore.isFavorite(product.id) ? 'text-amber-400 fill-amber-400' : 'text-slate-300 hover:text-amber-400'"
+        />
+      </button>
       <!-- Quick view -->
       <RouterLink
         :to="`/product/${product.id}`"
@@ -100,14 +111,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ShoppingCart, Check, Package } from '@lucide/vue'
+import { ShoppingCart, Check, Package, Star } from '@lucide/vue'
 import type { Product } from '@/shared/types'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { formatCurrency } from '@/shared/utils/currency'
 import AppBadge from '@/shared/components/ui/AppBadge.vue'
+import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import { useAuthModal } from '@/modules/auth/composables/useAuthModal'
+import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
 
 const props = defineProps<{ product: Product }>()
-const cartStore = useCartStore()
+const cartStore      = useCartStore()
+const authStore      = useAuthStore()
+const authModal      = useAuthModal()
+const favoritesStore = useFavoritesStore()
 const adding    = ref(false)
 const imgBroken = ref(false)
 
@@ -115,5 +132,13 @@ function handleAdd() {
   cartStore.addToCart(props.product)
   adding.value = true
   setTimeout(() => (adding.value = false), 1500)
+}
+
+function handleFavorite() {
+  if (!authStore.isAuthenticated) {
+    authModal.open('login')
+    return
+  }
+  favoritesStore.toggleFavorite(authStore.user!.id, props.product.id)
 }
 </script>
