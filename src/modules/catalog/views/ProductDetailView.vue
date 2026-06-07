@@ -207,7 +207,7 @@ function handleAdd() {
 
 function handleFavorite() {
   if (!auth.isAuthenticated) {
-    authModal.open('login')
+    authModal.open('login', 'Inicia sesión para guardar tus productos favoritos')
     return
   }
   if (product.value) {

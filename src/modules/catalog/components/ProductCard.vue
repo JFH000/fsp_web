@@ -139,7 +139,7 @@ function handleAdd() {
 
 function handleFavorite() {
   if (!authStore.isAuthenticated) {
-    authModal.open('login')
+    authModal.open('login', 'Inicia sesión para guardar tus productos favoritos')
     return
   }
   favoritesStore.toggleFavorite(authStore.user!.id, props.product.id)
