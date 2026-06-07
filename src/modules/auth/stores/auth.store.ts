@@ -40,7 +40,6 @@ export const useAuthStore = defineStore('auth', () => {
     const { error } = await supabase.from('user_profiles').upsert({
       id:    user.value.id,
       email: user.value.email,
-      role:  profile.value?.role ?? 'customer',
       ...data,
     })
     if (error) throw new Error(error.message)
