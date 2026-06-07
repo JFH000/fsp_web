@@ -11,7 +11,7 @@
             <X class="h-4 w-4" />
           </button>
           <!-- Hint contextual (ej. desde favoritos) -->
-          <div v-if="hint && mode === 'login'" class="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border-b border-amber-100 rounded-t-2xl">
+          <div v-if="hint && mode === 'login'" class="flex items-center gap-2.5 pl-4 pr-10 py-3 bg-amber-50 border-b border-amber-100 rounded-t-2xl">
             <Star class="h-4 w-4 flex-shrink-0 text-amber-500 fill-amber-400" />
             <span class="text-sm text-amber-800 font-medium">{{ hint }}</span>
           </div>
