@@ -80,7 +80,19 @@
             <span class="font-mono text-xs text-slate-400">SKU: {{ product.sku }}</span>
           </div>
 
-          <h1 class="text-3xl font-extrabold text-slate-900 leading-tight">{{ product.name }}</h1>
+          <div class="flex items-start gap-3">
+            <h1 class="text-3xl font-extrabold text-slate-900 leading-tight flex-1">{{ product.name }}</h1>
+            <button
+              @click="handleFavorite"
+              class="flex-shrink-0 mt-1 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+              :title="favoritesStore.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+            >
+              <Star
+                class="h-6 w-6 transition-colors"
+                :class="favoritesStore.isFavorite(product.id) ? 'text-amber-400 fill-amber-400' : 'text-slate-300 hover:text-amber-400'"
+              />
+            </button>
+          </div>
           <p class="text-slate-600 leading-relaxed">{{ product.description }}</p>
 
           <!-- Refrigerants -->
@@ -159,17 +171,21 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch, Pencil } from '@lucide/vue'
+import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch, Pencil, Star } from '@lucide/vue'
 import { useCatalogStore } from '../stores/catalog.store'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import { useAuthModal } from '@/modules/auth/composables/useAuthModal'
+import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
 import { formatCurrency } from '@/shared/utils/currency'
 import AppBadge from '@/shared/components/ui/AppBadge.vue'
 
-const route    = useRoute()
-const catalog  = useCatalogStore()
-const cart     = useCartStore()
-const auth     = useAuthStore()
+const route          = useRoute()
+const catalog        = useCatalogStore()
+const cart           = useCartStore()
+const auth           = useAuthStore()
+const authModal      = useAuthModal()
+const favoritesStore = useFavoritesStore()
 
 const product    = computed(() => catalog.getById(route.params.id as string))
 const activeImage = ref(0)
@@ -187,6 +203,16 @@ function handleAdd() {
   cart.addToCart(product.value, qty.value)
   justAdded.value = true
   setTimeout(() => (justAdded.value = false), 2000)
+}
+
+function handleFavorite() {
+  if (!auth.isAuthenticated) {
+    authModal.open('login')
+    return
+  }
+  if (product.value) {
+    favoritesStore.toggleFavorite(auth.user!.id, product.value.id)
+  }
 }
 
 const specGroups = computed(() => {
