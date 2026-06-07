@@ -1,112 +1,60 @@
 <template>
-  <div class="fixed inset-0 flex bg-slate-100">
-    <!-- Sidebar -->
-    <aside
-      :class="collapsed ? 'w-14' : 'w-56'"
-      class="bg-slate-900 flex flex-col flex-shrink-0 transition-all duration-200 overflow-hidden"
-    >
-      <!-- Logo + toggle -->
-      <div class="flex items-center h-16 border-b border-slate-800 flex-shrink-0"
-           :class="collapsed ? 'justify-center px-2' : 'gap-2.5 px-4'">
-        <img src="/logo.png" alt="FS Parts" :class="collapsed ? 'h-8 w-auto' : 'h-9 w-auto'" class="rounded flex-shrink-0 bg-white p-0.5" />
-        <div v-if="!collapsed" class="leading-none flex-1 min-w-0">
-          <p class="text-[10px] text-slate-500">Panel admin</p>
-        </div>
-        <button
-          v-if="!collapsed"
-          @click="collapsed = true"
-          class="flex-shrink-0 p-1 rounded-md text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
-        >
-          <PanelLeftClose class="h-4 w-4" />
-        </button>
-      </div>
+  <div class="fixed inset-0 bg-slate-100">
 
-      <!-- Toggle button when collapsed -->
-      <button
-        v-if="collapsed"
-        @click="collapsed = false"
-        class="flex items-center justify-center h-10 mx-2 mt-3 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
+    <!-- Top bar -->
+    <header class="fixed top-0 left-0 right-0 h-12 flex items-center justify-between pl-20 pr-4 z-40">
+      <span class="text-xs font-semibold tracking-widest text-slate-400 uppercase select-none">FS Parts Dashboard</span>
+      <ProfileDropdown />
+    </header>
+
+    <!-- Floating sidebar -->
+    <nav class="fixed left-3 top-1/2 -translate-y-1/2 z-40 bg-slate-900 rounded-2xl shadow-2xl p-2 flex flex-col gap-0.5">
+      <RouterLink
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        class="relative group flex items-center justify-center w-10 h-10 rounded-xl transition-colors"
+        :class="route.path.startsWith(item.to)
+          ? 'bg-brand-700 text-white'
+          : 'text-slate-400 hover:text-white hover:bg-slate-800'"
       >
-        <PanelLeftOpen class="h-4 w-4" />
-      </button>
+        <component :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+        <span class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+          {{ item.label }}
+        </span>
+      </RouterLink>
 
-      <!-- Nav -->
-      <nav class="flex-1 px-2 py-4 space-y-0.5">
-        <p
-          v-if="!collapsed"
-          class="text-[10px] text-slate-600 font-semibold uppercase tracking-widest px-3 mb-2"
-        >Catálogo</p>
-        <RouterLink
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          :title="collapsed ? item.label : undefined"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
-          :class="[
-            route.path.startsWith(item.to)
-              ? 'bg-brand-700/90 text-white shadow-sm'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800',
-            collapsed ? 'justify-center' : '',
-          ]"
-        >
-          <component :is="item.icon" class="h-4 w-4 flex-shrink-0" />
-          <span v-if="!collapsed">{{ item.label }}</span>
-        </RouterLink>
-      </nav>
+      <div class="my-1 h-px bg-slate-800" />
 
-      <!-- Footer -->
-      <div class="px-2 py-4 border-t border-slate-800 space-y-0.5">
-        <div v-if="!collapsed" class="px-3 py-1.5 mb-1">
-          <p class="text-[11px] text-slate-400 truncate">{{ authStore.user?.email }}</p>
-        </div>
-        <RouterLink
-          to="/"
-          :title="collapsed ? 'Ver tienda' : undefined"
-          class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-white hover:bg-slate-800 transition-all"
-          :class="collapsed ? 'justify-center' : ''"
-        >
-          <ExternalLink class="h-4 w-4" />
-          <span v-if="!collapsed">Ver tienda</span>
-        </RouterLink>
-        <button
-          @click="handleSignOut"
-          :title="collapsed ? 'Cerrar sesión' : undefined"
-          class="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all"
-          :class="collapsed ? 'justify-center' : ''"
-        >
-          <LogOut class="h-4 w-4" />
-          <span v-if="!collapsed">Cerrar sesión</span>
-        </button>
-      </div>
-    </aside>
+      <RouterLink
+        to="/"
+        class="relative group flex items-center justify-center w-10 h-10 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+      >
+        <ExternalLink class="h-5 w-5 flex-shrink-0" />
+        <span class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+          Ver tienda
+        </span>
+      </RouterLink>
+    </nav>
 
-    <!-- Main -->
-    <main class="flex-1 overflow-y-auto">
+    <!-- Main content -->
+    <main class="h-full overflow-y-auto pl-20 pt-12">
       <RouterView />
     </main>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { Package, Layers, Settings, LogOut, ExternalLink, PanelLeftClose, PanelLeftOpen } from '@lucide/vue'
-import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import { useRoute } from 'vue-router'
+import { Package, Layers, Settings, ExternalLink } from '@lucide/vue'
+import ProfileDropdown from '@/modules/auth/components/ProfileDropdown.vue'
 
-const authStore = useAuthStore()
-const route     = useRoute()
-const router    = useRouter()
-
-const collapsed = ref(false)
+const route = useRoute()
 
 const navItems = [
-  { to: '/admin/products', label: 'Productos',     icon: Package  },
-  { to: '/admin/catalog',  label: 'Catálogo',      icon: Layers   },
-  { to: '/admin/settings', label: 'CSV',           icon: Settings },
+  { to: '/admin/products', label: 'Productos', icon: Package  },
+  { to: '/admin/catalog',  label: 'Catálogo',  icon: Layers   },
+  { to: '/admin/settings', label: 'CSV',        icon: Settings },
 ]
-
-async function handleSignOut() {
-  await authStore.signOut()
-  router.push('/admin/login')
-}
 </script>
