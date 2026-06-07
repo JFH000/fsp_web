@@ -84,7 +84,7 @@
             <h1 class="text-3xl font-extrabold text-slate-900 leading-tight flex-1">{{ product.name }}</h1>
             <button
               @click="handleFavorite"
-              class="flex-shrink-0 mt-1 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+              class="flex-shrink-0 mt-1 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
               :title="favoritesStore.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'"
             >
               <Star
