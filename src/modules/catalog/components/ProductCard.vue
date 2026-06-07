@@ -21,7 +21,10 @@
       <!-- Favorite button -->
       <button
         @click.stop.prevent="handleFavorite"
-        class="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm cursor-pointer"
+        :class="[
+          'absolute top-2 right-2 z-10 transition-opacity p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm cursor-pointer',
+          favoritesStore.isFavorite(product.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        ]"
         :title="favoritesStore.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'"
       >
         <Star
