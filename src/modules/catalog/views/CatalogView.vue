@@ -18,8 +18,10 @@
     <div class="flex gap-8">
       <!-- Filter sidebar (desktop) -->
       <div class="hidden lg:block w-64 flex-shrink-0">
-        <div class="sticky top-32 bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-          <FilterSidebar />
+        <div class="sticky top-24 flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden max-h-[calc(100vh-7rem)]">
+          <div class="overflow-y-auto overscroll-contain p-5 flex-1 scrollbar-thin">
+            <FilterSidebar />
+          </div>
         </div>
       </div>
 
