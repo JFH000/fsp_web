@@ -180,6 +180,7 @@ export const useCatalogStore = defineStore('catalog', () => {
     sortBy,
     searchInput,
     // data
+    allProducts,
     productLines:  allProductLines,
     brands:        allBrands,
     categories:    allCategories,
