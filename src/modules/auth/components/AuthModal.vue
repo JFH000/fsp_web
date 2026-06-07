@@ -32,7 +32,14 @@ import EditProfileForm from './EditProfileForm.vue'
 const { mode, close } = useAuthModal()
 
 watch(mode, (val) => {
-  document.body.style.overflow = val ? 'hidden' : ''
+  if (val) {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    document.body.style.overflow = 'hidden'
+    document.body.style.paddingRight = `${scrollbarWidth}px`
+  } else {
+    document.body.style.overflow = ''
+    document.body.style.paddingRight = ''
+  }
 }, { immediate: true })
 </script>
 
