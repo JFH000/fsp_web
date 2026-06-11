@@ -132,7 +132,8 @@
               v-model="form.stock"
               type="number"
               min="0"
-              class="field-input"
+              readonly
+              class="field-input cursor-default opacity-60"
               placeholder="0"
             />
             <input
