@@ -124,8 +124,25 @@
             </div>
           </div>
           <div>
-            <label class="field-label">Stock</label>
-            <input v-model="form.stock" type="number" min="0" class="field-input" placeholder="0" />
+            <label class="field-label">
+              {{ isEditMode ? 'Stock' : 'Stock inicial' }}
+            </label>
+            <input
+              v-if="isEditMode"
+              v-model="form.stock"
+              type="number"
+              min="0"
+              class="field-input"
+              placeholder="0"
+            />
+            <input
+              v-else
+              v-model.number="stockInicial"
+              type="number"
+              min="0"
+              class="field-input"
+              placeholder="0"
+            />
           </div>
         </div>
         <div class="grid grid-cols-4 gap-4">
@@ -314,6 +331,7 @@ import {
   updateProduct,
   type ProductPayload,
 } from '@/modules/admin/services/admin.service'
+import { createInitialStockMovement } from '@/modules/admin/services/stock.service'
 
 const route        = useRoute()
 const router       = useRouter()
@@ -332,6 +350,7 @@ const fileInput        = ref<HTMLInputElement | null>(null)
 const isUploading      = ref(false)
 const isDragging       = ref(false)
 const uploadError      = ref('')
+const stockInicial     = ref<number>(0)
 
 function showError(msg: string) {
   pageError.value = msg
@@ -514,7 +533,11 @@ async function handleSave() {
     if (isEditMode.value) {
       await updateProduct(route.params.id as string, payload)
     } else {
-      await createProduct(payload)
+      // Always create with stock=0; initial stock is managed via the movement ledger
+      const newId = await createProduct({ ...payload, stock: 0 })
+      if (stockInicial.value > 0) {
+        await createInitialStockMovement(newId, stockInicial.value)
+      }
     }
     router.push('/admin/products')
   } catch (e: unknown) {
