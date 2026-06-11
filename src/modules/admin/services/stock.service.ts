@@ -51,7 +51,6 @@ export async function listProductsWithStock(): Promise<ProductStockRow[]> {
       id, sku, name, stock,
       product_line:product_lines(id, code)
     `)
-    .eq('is_active', true)
     .order('name')
   if (error) throw new Error(error.message)
 
