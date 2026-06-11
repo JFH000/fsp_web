@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS stock_receipts (
   reference   TEXT NOT NULL,
   supplier    TEXT,
   notes       TEXT,
-  created_by  UUID NOT NULL REFERENCES auth.users(id),
+  created_by  UUID NOT NULL REFERENCES user_profiles(id),
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS stock_movements (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id    UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   receipt_id    UUID REFERENCES stock_receipts(id) ON DELETE SET NULL,
-  quantity      INTEGER NOT NULL,
+  quantity      INTEGER NOT NULL CHECK (quantity != 0),
   cost_per_unit NUMERIC(12,2),
   type          TEXT NOT NULL CHECK (type IN ('ingreso', 'ajuste')),
   notes         TEXT,
-  created_by    UUID NOT NULL REFERENCES auth.users(id),
+  created_by    UUID NOT NULL REFERENCES user_profiles(id),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -34,7 +34,14 @@ CREATE INDEX IF NOT EXISTS idx_stock_movements_product_id
 -- ============================================================
 CREATE OR REPLACE FUNCTION update_product_stock()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
+DECLARE
+  current_stock INTEGER;
 BEGIN
+  SELECT stock INTO current_stock FROM products WHERE id = NEW.product_id;
+  IF current_stock + NEW.quantity < 0 THEN
+    RAISE EXCEPTION 'stock insuficiente: el ajuste llevaría el stock a un valor negativo (actual: %, delta: %)',
+      current_stock, NEW.quantity;
+  END IF;
   UPDATE products
   SET stock = stock + NEW.quantity
   WHERE id = NEW.product_id;
@@ -56,14 +63,17 @@ ALTER TABLE stock_movements ENABLE ROW LEVEL SECURITY;
 -- Helper reused from existing schema: is_admin() checks user_profiles.role = 'admin'
 -- stock_receipts: admins full access
 CREATE POLICY "admins_stock_receipts_select" ON stock_receipts
-  FOR SELECT USING (is_admin());
+  FOR SELECT USING (public.is_admin());
 CREATE POLICY "admins_stock_receipts_insert" ON stock_receipts
-  FOR INSERT WITH CHECK (is_admin());
+  FOR INSERT WITH CHECK (public.is_admin());
+
+-- No DELETE policy: receipts are intentionally immutable once created.
+-- To void a receipt, create compensating adjustments.
 CREATE POLICY "admins_stock_receipts_update" ON stock_receipts
-  FOR UPDATE USING (is_admin()) WITH CHECK (is_admin());
+  FOR UPDATE USING (public.is_admin()) WITH CHECK (public.is_admin());
 
 -- stock_movements: admins can read and insert; no update/delete (immutable ledger)
 CREATE POLICY "admins_stock_movements_select" ON stock_movements
-  FOR SELECT USING (is_admin());
+  FOR SELECT USING (public.is_admin());
 CREATE POLICY "admins_stock_movements_insert" ON stock_movements
-  FOR INSERT WITH CHECK (is_admin());
+  FOR INSERT WITH CHECK (public.is_admin());
