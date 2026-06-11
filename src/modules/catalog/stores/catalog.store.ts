@@ -157,7 +157,10 @@ export const useCatalogStore = defineStore('catalog', () => {
       ])
 
       allProducts.value     = shuffle(products)
-      allProductLines.value = productLines
+      allProductLines.value = productLines.map(line => ({
+        ...line,
+        productCount: products.filter(p => p.productLine.id === line.id).length,
+      }))
       allBrands.value       = brands
       allCategories.value   = categories
 
