@@ -20,21 +20,27 @@
 
     <!-- In stock only -->
     <div class="mb-5 pb-5 border-b border-slate-100">
-      <label class="flex items-center gap-2.5 cursor-pointer group">
-        <div
+      <div class="flex items-center gap-2.5">
+        <button
+          type="button"
+          role="switch"
+          :aria-checked="store.filters.inStockOnly"
           @click="store.filters.inStockOnly = !store.filters.inStockOnly"
           :class="[
-            'w-10 h-5 rounded-full transition-colors flex-shrink-0',
+            'w-10 h-5 rounded-full transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1',
             store.filters.inStockOnly ? 'bg-brand-600' : 'bg-slate-200',
           ]"
         >
           <div :class="[
-            'w-4 h-4 bg-white rounded-full m-0.5 shadow transition-transform',
+            'w-4 h-4 bg-white rounded-full m-0.5 shadow transition-transform pointer-events-none',
             store.filters.inStockOnly ? 'translate-x-5' : 'translate-x-0',
-          ]" />
-        </div>
-        <span class="text-sm text-slate-700 group-hover:text-slate-900">Solo con stock</span>
-      </label>
+          ]" aria-hidden="true" />
+        </button>
+        <span
+          class="text-sm text-slate-700 cursor-pointer select-none hover:text-slate-900"
+          @click="store.filters.inStockOnly = !store.filters.inStockOnly"
+        >Solo con stock</span>
+      </div>
     </div>
 
     <!-- Product Lines -->

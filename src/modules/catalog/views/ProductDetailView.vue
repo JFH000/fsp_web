@@ -1,13 +1,14 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Loading -->
+    <!-- Not found -->
     <div v-if="!product" class="text-center py-20">
-      <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-        <PackageSearch class="h-8 w-8 text-slate-400" />
+      <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center mb-4 mx-auto">
+        <PackageSearch class="h-7 w-7 text-slate-400" aria-hidden="true" />
       </div>
-      <p class="text-slate-500">Producto no encontrado.</p>
-      <RouterLink to="/catalog" class="mt-4 inline-flex items-center gap-1 text-brand-600 hover:underline text-sm">
-        <ArrowLeft class="h-4 w-4" /> Volver al catálogo
+      <h2 class="text-lg font-semibold text-slate-700 mb-1">Producto no encontrado</h2>
+      <p class="text-sm text-slate-400 mb-5">El producto que buscas no existe o fue removido del catálogo.</p>
+      <RouterLink to="/catalog" class="inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-4 py-2 rounded-lg hover:bg-brand-50 transition-colors">
+        <ArrowLeft class="h-4 w-4" aria-hidden="true" /> Volver al catálogo
       </RouterLink>
     </div>
 
@@ -23,16 +24,16 @@
       </RouterLink>
 
       <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6">
+      <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6" aria-label="Navegación">
         <RouterLink to="/" class="hover:text-brand-600">Inicio</RouterLink>
-        <ChevronRight class="h-3 w-3" />
+        <ChevronRight class="h-3 w-3" aria-hidden="true" />
         <RouterLink to="/catalog" class="hover:text-brand-600">Catálogo</RouterLink>
-        <ChevronRight class="h-3 w-3" />
+        <ChevronRight class="h-3 w-3" aria-hidden="true" />
         <RouterLink :to="`/catalog?line=${product.productLine.code}`" class="hover:text-brand-600">
           {{ product.productLine.name }}
         </RouterLink>
-        <ChevronRight class="h-3 w-3" />
-        <span class="text-slate-700 truncate max-w-xs">{{ product.name }}</span>
+        <ChevronRight class="h-3 w-3" aria-hidden="true" />
+        <span class="text-slate-700 truncate max-w-xs" aria-current="page">{{ product.name }}</span>
       </nav>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -73,7 +74,7 @@
         <div class="flex flex-col gap-4">
           <!-- Brand + line + sku -->
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-sm font-bold text-brand-700 uppercase tracking-wider">{{ product.brand.name }}</span>
+            <span class="text-sm font-semibold text-brand-700">{{ product.brand.name }}</span>
             <span class="text-slate-300">·</span>
             <AppBadge variant="slate">{{ product.productLine.code }} · {{ product.productLine.name }}</AppBadge>
             <span class="text-slate-300">·</span>
@@ -81,7 +82,7 @@
           </div>
 
           <div class="flex items-start gap-3">
-            <h1 class="text-3xl font-extrabold text-slate-900 leading-tight flex-1">{{ product.name }}</h1>
+            <h1 class="text-3xl font-extrabold text-slate-900 leading-tight flex-1 text-balance">{{ product.name }}</h1>
             <button
               @click="handleFavorite"
               class="flex-shrink-0 mt-1 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
@@ -93,7 +94,7 @@
               />
             </button>
           </div>
-          <p class="text-slate-600 leading-relaxed">{{ product.description }}</p>
+          <p class="text-slate-600 leading-relaxed text-pretty">{{ product.description }}</p>
 
           <!-- Refrigerants -->
           <div v-if="product.refrigerants.length" class="flex items-start gap-2 flex-wrap">
@@ -106,7 +107,7 @@
           </div>
 
           <!-- Price -->
-          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200">
             <template v-if="product.priceCop != null">
               <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.priceCop) }}</p>
               <p class="text-xs text-slate-400 mb-4">COP · IVA incluido</p>
@@ -129,16 +130,24 @@
 
             <!-- Qty + Add -->
             <div class="flex gap-3">
-              <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white">
-                <button @click="qty > 1 && qty--" class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 transition-colors text-lg font-bold cursor-pointer">−</button>
-                <span class="px-4 text-base font-semibold min-w-[3rem] text-center">{{ qty }}</span>
-                <button @click="(!product.stock || qty < product.stock) && qty++" class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 transition-colors text-lg font-bold cursor-pointer">+</button>
+              <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden" role="group" aria-label="Cantidad">
+                <button
+                  @click="qty > 1 && qty--"
+                  aria-label="Reducir cantidad"
+                  class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 rounded-l-xl transition-colors text-lg font-bold cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                >−</button>
+                <span class="px-4 text-base font-semibold min-w-[3rem] text-center border-x border-slate-200">{{ qty }}</span>
+                <button
+                  @click="(!product.stock || qty < product.stock) && qty++"
+                  aria-label="Aumentar cantidad"
+                  class="px-3 py-3 text-slate-500 hover:bg-slate-50 active:bg-slate-100 rounded-r-xl transition-colors text-lg font-bold cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                >+</button>
               </div>
               <button
                 @click="handleAdd"
-                class="flex-1 flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 text-white font-bold py-3 px-6 rounded-xl transition-colors text-base"
+                class="flex-1 flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 text-white font-bold py-3 px-6 rounded-xl transition-colors text-base focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
               >
-                <component :is="justAdded ? Check : ShoppingCart" class="h-5 w-5" />
+                <component :is="justAdded ? Check : ShoppingCart" class="h-5 w-5" aria-hidden="true" />
                 {{ justAdded ? '¡Agregado al carrito!' : 'Agregar al carrito' }}
               </button>
             </div>
@@ -149,7 +158,7 @@
 
       <!-- Specs table -->
       <div class="mt-12">
-        <h2 class="text-xl font-bold text-slate-900 mb-6">Especificaciones técnicas</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-6 text-balance">Especificaciones técnicas</h2>
         <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
           <div v-for="(group, groupName) in specGroups" :key="groupName">
             <div class="bg-slate-50 px-5 py-2.5 border-b border-slate-100">

@@ -2,16 +2,16 @@
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Breadcrumb + title -->
     <div class="mb-6">
-      <nav class="flex items-center gap-2 text-xs text-slate-400 mb-2">
+      <nav class="flex items-center gap-2 text-xs text-slate-400 mb-2" aria-label="Navegación">
         <RouterLink to="/" class="hover:text-brand-600">Inicio</RouterLink>
-        <ChevronRight class="h-3 w-3" />
-        <span class="text-slate-700 font-medium">Catálogo</span>
+        <ChevronRight class="h-3 w-3" aria-hidden="true" />
+        <span class="text-slate-700 font-medium" :aria-current="activeLineName ? undefined : 'page'">Catálogo</span>
         <template v-if="activeLineName">
-          <ChevronRight class="h-3 w-3" />
-          <span class="text-slate-700">{{ activeLineName }}</span>
+          <ChevronRight class="h-3 w-3" aria-hidden="true" />
+          <span class="text-slate-700" aria-current="page">{{ activeLineName }}</span>
         </template>
       </nav>
-      <h1 class="text-2xl font-bold text-slate-900">{{ pageTitle }}</h1>
+      <h1 class="text-2xl font-bold text-slate-900 text-balance">{{ pageTitle }}</h1>
       <p class="text-slate-500 text-sm mt-1">{{ store.filteredProducts.length }} resultados encontrados</p>
     </div>
 
@@ -40,15 +40,20 @@
           </button>
 
           <!-- Active filters chips -->
-          <div class="flex flex-wrap gap-2 flex-1">
+          <div class="flex flex-wrap gap-2 flex-1" role="list" aria-label="Filtros activos">
             <span
               v-for="chip in activeChips"
               :key="chip.label"
               class="flex items-center gap-1 text-xs bg-brand-50 text-brand-700 border border-brand-200 px-2.5 py-1 rounded-full"
+              role="listitem"
             >
               {{ chip.label }}
-              <button @click="chip.remove()" class="hover:text-red-500 ml-0.5">
-                <X class="h-3 w-3" />
+              <button
+                @click="chip.remove()"
+                :aria-label="`Quitar filtro: ${chip.label}`"
+                class="hover:text-red-500 ml-0.5 focus-visible:outline-2 focus-visible:outline-red-400 rounded"
+              >
+                <X class="h-3 w-3" aria-hidden="true" />
               </button>
             </span>
           </div>
@@ -58,7 +63,8 @@
             <ArrowUpDown class="h-4 w-4" />
             <select
               v-model="store.sortBy"
-              class="border-0 text-sm text-slate-700 font-medium focus:outline-none cursor-pointer bg-transparent"
+              aria-label="Ordenar resultados"
+              class="border-0 text-sm text-slate-700 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 cursor-pointer bg-transparent rounded"
             >
               <option value="relevance">Relevancia</option>
               <option value="price-asc">Precio: menor a mayor</option>
@@ -80,12 +86,15 @@
 
         <!-- Empty state -->
         <div v-else class="flex flex-col items-center justify-center py-24 text-center">
-          <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
-            <PackageSearch class="h-8 w-8 text-slate-400" />
+          <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center mb-4">
+            <PackageSearch class="h-7 w-7 text-slate-400" aria-hidden="true" />
           </div>
-          <h3 class="text-lg font-semibold text-slate-700 mb-2">No se encontraron productos</h3>
-          <p class="text-slate-400 text-sm mb-6">Intenta con otros términos o limpia los filtros</p>
-          <button @click="store.resetFilters()" class="bg-brand-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
+          <h3 class="text-lg font-semibold text-slate-700 mb-1.5">No se encontraron productos</h3>
+          <p class="text-slate-400 text-sm mb-6 text-pretty max-w-xs">Intenta con otros términos o ajusta los filtros activos</p>
+          <button
+            @click="store.resetFilters()"
+            class="bg-brand-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+          >
             Limpiar filtros
           </button>
         </div>
@@ -146,15 +155,28 @@
         <div v-if="showMobileFilters" class="fixed inset-0 bg-black/50 z-50 lg:hidden" @click="showMobileFilters = false" />
       </Transition>
       <Transition name="slide-right">
-        <div v-if="showMobileFilters" class="fixed top-0 right-0 h-full w-80 bg-white z-50 shadow-2xl overflow-y-auto p-5 lg:hidden">
+        <div
+          v-if="showMobileFilters"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="mobile-filters-title"
+          class="fixed top-0 right-0 h-full w-80 bg-white z-50 shadow-2xl overflow-y-auto p-5 lg:hidden"
+        >
           <div class="flex items-center justify-between mb-5">
-            <h2 class="font-bold text-slate-900">Filtros</h2>
-            <button @click="showMobileFilters = false" class="text-slate-400 hover:text-slate-700">
-              <X class="h-5 w-5" />
+            <h2 id="mobile-filters-title" class="font-bold text-slate-900">Filtros</h2>
+            <button
+              @click="showMobileFilters = false"
+              aria-label="Cerrar filtros"
+              class="text-slate-400 hover:text-slate-700 p-1 rounded-lg focus-visible:ring-2 focus-visible:ring-brand-500"
+            >
+              <X class="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
           <FilterSidebar />
-          <button @click="showMobileFilters = false" class="w-full mt-4 bg-brand-700 text-white py-3 rounded-xl font-semibold">
+          <button
+            @click="showMobileFilters = false"
+            class="w-full mt-4 bg-brand-700 text-white py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+          >
             Ver {{ store.filteredProducts.length }} resultados
           </button>
         </div>
