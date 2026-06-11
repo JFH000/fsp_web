@@ -209,6 +209,7 @@
             <div v-if="isLoadingMovements" class="flex justify-center py-8">
               <Loader2 class="h-5 w-5 text-brand-600 animate-spin" />
             </div>
+            <div v-else-if="movementsError" class="text-sm text-red-500 py-6 text-center">{{ movementsError }}</div>
             <template v-else>
               <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
                 Historial de movimientos
@@ -378,13 +379,17 @@ async function confirmAdjust() {
 const historialProduct    = ref<ProductStockRow | null>(null)
 const movements           = ref<StockMovement[]>([])
 const isLoadingMovements  = ref(false)
+const movementsError      = ref('')
 
 async function openHistorial(row: ProductStockRow) {
   historialProduct.value   = row
   isLoadingMovements.value = true
   movements.value          = []
+  movementsError.value     = ''
   try {
     movements.value = await listMovements(row.id)
+  } catch (e: unknown) {
+    movementsError.value = e instanceof Error ? e.message : 'Error al cargar movimientos'
   } finally {
     isLoadingMovements.value = false
   }
@@ -395,6 +400,7 @@ async function openHistorial(row: ProductStockRow) {
 function stockAfter(indexFromTop: number): number {
   if (!historialProduct.value) return 0
   // movements[0] is the latest; we want to show the stock resulting from each event
+  // Requires the full history to be loaded (no server-side limit on listMovements)
   // Accumulate from oldest (end of array) to newest
   const reversed = [...movements.value].reverse()
   let acc = 0
