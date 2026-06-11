@@ -87,13 +87,19 @@
       <!-- Price + Action -->
       <div class="flex items-center justify-between pt-1 border-t border-slate-100 mt-1">
         <div>
-          <template v-if="product.priceCop != null">
-            <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(product.priceCop) }}</p>
-            <p class="text-[10px] text-slate-400">COP · IVA incluido</p>
+          <!-- WS discounted price -->
+          <template v-if="isDiscounted">
+            <p class="text-[10px] text-slate-400 line-through leading-tight">{{ formatCurrency(basePrice!) }}</p>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(effectivePrice!) }}</p>
+              <AppBadge :variant="tierLabel!.startsWith('OEM') ? 'orange' : 'blue'" size="xs">{{ tierLabel }}</AppBadge>
+            </div>
+            <p v-if="bulkPrice" class="text-[10px] text-slate-500 mt-0.5">+10 uds: {{ formatCurrency(bulkPrice) }}</p>
           </template>
-          <template v-else-if="product.priceUsd != null">
-            <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(product.priceUsd) }}</p>
-            <p class="text-[10px] text-slate-400">USD</p>
+          <!-- Regular price -->
+          <template v-else-if="effectivePrice != null">
+            <p class="text-xl font-extrabold text-slate-900">{{ formatCurrency(effectivePrice) }}</p>
+            <p class="text-[10px] text-slate-400">{{ props.product.priceCop != null ? 'COP · IVA incluido' : 'USD' }}</p>
           </template>
           <template v-else>
             <p class="text-sm font-semibold text-slate-400">Consultar precio</p>
@@ -113,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { ShoppingCart, Check, Package, Star } from '@lucide/vue'
 import type { Product } from '@/shared/types'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
@@ -122,6 +128,7 @@ import AppBadge from '@/shared/components/ui/AppBadge.vue'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
 import { useAuthModal } from '@/modules/auth/composables/useAuthModal'
 import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
+import { useProductPrice } from '@/modules/catalog/composables/useProductPrice'
 
 const props = defineProps<{ product: Product }>()
 const cartStore      = useCartStore()
@@ -130,6 +137,10 @@ const authModal      = useAuthModal()
 const favoritesStore = useFavoritesStore()
 const adding    = ref(false)
 const imgBroken = ref(false)
+
+const { effectivePrice, basePrice, isDiscounted, tierLabel, bulkPrice } = useProductPrice(
+  computed(() => props.product)
+)
 
 function handleAdd() {
   cartStore.addToCart(props.product)
