@@ -105,8 +105,9 @@ CREATE TABLE user_profiles (
   email       VARCHAR(200) UNIQUE,
   phone       VARCHAR(50),
   role        VARCHAR(20) DEFAULT 'customer'
-                CHECK (role IN ('customer', 'technician', 'distributor', 'admin')),
+                CHECK (role IN ('admin', 'customer', 'customer_ws1', 'customer_ws3')),
   company     VARCHAR(200),
+  notes       TEXT,
   created_at  TIMESTAMPTZ DEFAULT NOW(),
   updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
@@ -191,10 +192,15 @@ CREATE POLICY "public_read_images"      ON product_images     FOR SELECT USING (
 CREATE POLICY "public_read_specs"       ON product_specs      FOR SELECT USING (TRUE);
 CREATE POLICY "public_read_refrigerants" ON product_refrigerants FOR SELECT USING (TRUE);
 
--- Users can only read/write their own profile
-CREATE POLICY "own_profile_select" ON user_profiles FOR SELECT USING (auth.uid() = id);
+-- Users can read/write their own profile; admins can read and update all profiles
+CREATE POLICY "own_profile_select" ON user_profiles FOR SELECT TO authenticated
+  USING (auth.uid() = id OR is_admin());
 CREATE POLICY "own_profile_insert" ON user_profiles FOR INSERT WITH CHECK (auth.uid() = id);
-CREATE POLICY "own_profile_update" ON user_profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "own_profile_update" ON user_profiles FOR UPDATE TO authenticated
+  USING (auth.uid() = id AND NOT is_admin())
+  WITH CHECK (auth.uid() = id AND role = (SELECT up.role FROM user_profiles up WHERE up.id = auth.uid()));
+CREATE POLICY "admin_profile_update" ON user_profiles FOR UPDATE TO authenticated
+  USING (is_admin()) WITH CHECK (is_admin());
 
 -- Users can only see their own orders
 CREATE POLICY "own_orders_select" ON orders FOR SELECT USING (auth.uid() = user_id);
