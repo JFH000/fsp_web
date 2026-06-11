@@ -26,8 +26,8 @@ export interface StockMovement {
 
 export interface CreateReceiptInput {
   reference: string
-  supplier:  string
-  notes:     string
+  supplier?:  string
+  notes?:     string
   lines: Array<{
     product_id:    string
     quantity:      number
@@ -61,11 +61,12 @@ export async function listProductsWithStock(): Promise<ProductStockRow[]> {
   const ids = (data ?? []).map((p: { id: string }) => p.id)
   let lastMovements: Array<{ product_id: string; type: string; quantity: number; created_at: string }> = []
   if (ids.length) {
-    const { data: mv } = await getSb()
+    const { data: mv, error: mvErr } = await getSb()
       .from('stock_movements')
       .select('product_id, type, quantity, created_at')
       .in('product_id', ids)
       .order('created_at', { ascending: false })
+    if (mvErr) throw new Error(mvErr.message)
     // keep only the most recent per product
     const seen = new Set<string>()
     for (const m of (mv ?? [])) {
@@ -98,7 +99,7 @@ export async function listMovements(productId: string): Promise<StockMovement[]>
     .eq('product_id', productId)
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []) as unknown as StockMovement[]
+  return (data ?? []) as StockMovement[]
 }
 
 // ── Mutations ─────────────────────────────────────────────────────────────────
@@ -124,7 +125,7 @@ export async function createReceipt(input: CreateReceiptInput): Promise<void> {
   // 2. Insert all movement lines in one batch
   const movements = input.lines.map(line => ({
     product_id:    line.product_id,
-    receipt_id:    (receipt as { id: string }).id,
+    receipt_id:    receipt!.id,
     quantity:      line.quantity,
     cost_per_unit: line.cost_per_unit ?? null,
     type:          'ingreso' as const,
@@ -132,8 +133,14 @@ export async function createReceipt(input: CreateReceiptInput): Promise<void> {
     created_by:    user.id,
   }))
 
-  const { error: mErr } = await sb.from('stock_movements').insert(movements)
-  if (mErr) throw new Error(mErr.message)
+  try {
+    const { error: mErr } = await sb.from('stock_movements').insert(movements)
+    if (mErr) throw new Error(mErr.message)
+  } catch (err) {
+    // Best-effort cleanup: remove the orphaned receipt before surfacing the error
+    await sb.from('stock_receipts').delete().eq('id', receipt!.id)
+    throw err
+  }
 }
 
 export async function createAdjustment(
