@@ -35,7 +35,7 @@ export function useProductPrice(
         effectivePrice: effective,
         basePrice:      effective !== null && base !== null && effective < base ? base : null,
         isDiscounted:   effective !== null && base !== null && effective < base,
-        tierLabel:      q >= 10 ? 'WS2 ×10' : 'WS1',
+        tierLabel:      p.priceWs1 != null ? (q >= 10 ? 'WS2 ×10' : 'WS1') : null,
         bulkPrice:      q < 10 ? ws2 : null,
       }
     }
@@ -48,7 +48,7 @@ export function useProductPrice(
         effectivePrice: effective,
         basePrice:      effective !== null && base !== null && effective < base ? base : null,
         isDiscounted:   effective !== null && base !== null && effective < base,
-        tierLabel:      q >= 10 ? 'OEM ×10' : 'OEM',
+        tierLabel:      p.priceWs3 != null ? (q >= 10 ? 'OEM ×10' : 'OEM') : null,
         bulkPrice:      q < 10 ? ws4 : null,
       }
     }
