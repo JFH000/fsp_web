@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-11T00:00:00.000Z",
+  "title": "Design System: FSP Parts",
+  "extensions": {
+    "colorMeta": {
+      "specification-blue": {
+        "role": "primary",
+        "displayName": "Specification Blue",
+        "canonical": "#3b82f6",
+        "tonalRamp": ["#172554", "#1e3a8a", "#1e40af", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#eff6ff"]
+      },
+      "blueprint-indigo": {
+        "role": "primary",
+        "displayName": "Blueprint Indigo",
+        "canonical": "#1d4ed8",
+        "tonalRamp": ["#172554", "#1e3a8a", "#1e40af", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#eff6ff"]
+      },
+      "thermal-orange": {
+        "role": "secondary",
+        "displayName": "Thermal Orange",
+        "canonical": "#f97316",
+        "tonalRamp": ["#431407", "#7c2d12", "#c2410c", "#ea580c", "#f97316", "#fb923c", "#fdba74", "#fff7ed"]
+      },
+      "datasheet-black": {
+        "role": "neutral",
+        "displayName": "Datasheet Black",
+        "canonical": "#0f172a",
+        "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#f8fafc"]
+      },
+      "clean-field-white": {
+        "role": "neutral",
+        "displayName": "Clean Field White",
+        "canonical": "#f8fafc",
+        "tonalRamp": ["#0f172a", "#1e293b", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0", "#f8fafc"]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Surface Raised",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#1e293b", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0", "#f8fafc", "#ffffff"]
+      },
+      "stock-green": {
+        "role": "tertiary",
+        "displayName": "Stock Green",
+        "canonical": "#10b981",
+        "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#d1fae5"]
+      },
+      "stock-amber": {
+        "role": "tertiary",
+        "displayName": "Stock Amber",
+        "canonical": "#f59e0b",
+        "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fffbeb"]
+      },
+      "sku-teal": {
+        "role": "tertiary",
+        "displayName": "SKU Teal",
+        "canonical": "#0f766e",
+        "tonalRamp": ["#042f2e", "#134e4a", "#115e59", "#0f766e", "#0d9488", "#14b8a6", "#5eead4", "#f0fdfa"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only. One per page. 800 weight, tight tracking." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles. Two to three per full page scroll maximum." },
+      "title": { "displayName": "Title", "purpose": "Component headers, modal titles, group labels." },
+      "body": { "displayName": "Body", "purpose": "All running text in the catalog, product descriptions, filter labels." },
+      "label": { "displayName": "Label", "purpose": "Badges, line codes, status labels. Only uppercase-tracked type in the system." },
+      "mono": { "displayName": "Mono", "purpose": "SKUs, part numbers, refrigerant codes. Data identifiers only." }
+    },
+    "shadows": [
+      { "name": "surface-hover", "value": "0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.06)", "purpose": "Product cards and interactive tiles on hover only. Invisible at rest." },
+      { "name": "action-emphasis", "value": "0 4px 20px rgba(0,0,0,0.12)", "purpose": "Hero search bar and primary CTA. The one shadow allowed at rest — marks the primary action zone." },
+      { "name": "overlay-separation", "value": "0 8px 48px rgba(0,0,0,0.18)", "purpose": "Cart drawer, auth modal. Clear layer separation from content beneath." },
+      { "name": "sticky-header", "value": "0 1px 3px rgba(0,0,0,0.08)", "purpose": "Navbar on scroll. Minimal stickiness cue." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for color/background transitions (button hover, badge state)." },
+      { "name": "ease-out-cubic", "value": "cubic-bezier(0.33, 1, 0.68, 1)", "purpose": "Card lift and translate transitions. Feels snappy and direct." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Color transitions, hover state changes." },
+      { "name": "duration-default", "value": "200ms", "purpose": "Opacity fades, standard transitions." },
+      { "name": "duration-slide", "value": "300ms", "purpose": "Cart drawer slide-in/out, modal entrance." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action button. Blueprint Indigo fill. Used for search submit, catalog actions, navbar CTAs.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.35-4.35\"/></svg>Buscar</button>",
+      "css": ".ds-btn-primary { background: #1d4ed8; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 600; line-height: 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; } .ds-btn-primary:hover { background: #1e40af; } .ds-btn-primary:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; } .ds-btn-primary:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }"
+    },
+    {
+      "name": "CTA Button",
+      "kind": "button",
+      "refersTo": "button-cta",
+      "description": "Purchase/conversion CTA. Thermal Orange. One per screen. Used for Add to Cart and primary hero actions.",
+      "html": "<button class=\"ds-btn-cta\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"8\" cy=\"21\" r=\"1\"/><circle cx=\"19\" cy=\"21\" r=\"1\"/><path d=\"M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12\"/></svg>Agregar</button>",
+      "css": ".ds-btn-cta { background: #f97316; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 600; line-height: 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; } .ds-btn-cta:hover { background: #ea580c; } .ds-btn-cta:focus-visible { outline: 2px solid #f97316; outline-offset: 2px; } .ds-btn-cta:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Main catalog search field. Slate-50 at rest, white on focus. Blueprint Indigo focus ring. Attached submit button.",
+      "html": "<div class=\"ds-search-field\"><svg class=\"ds-search-field__icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.35-4.35\"/></svg><input class=\"ds-search-field__input\" type=\"text\" placeholder=\"Buscar por nombre, SKU o marca...\"/><button class=\"ds-search-field__submit\">Buscar</button></div>",
+      "css": ".ds-search-field { display: flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease; } .ds-search-field:focus-within { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); } .ds-search-field__icon { flex-shrink: 0; margin-left: 14px; color: #94a3b8; } .ds-search-field__input { flex: 1; min-width: 0; background: transparent; border: none; padding: 10px 12px; font-family: Inter, system-ui, sans-serif; font-size: 14px; color: #0f172a; outline: none; } .ds-search-field__input::placeholder { color: #94a3b8; } .ds-search-field__submit { flex-shrink: 0; margin: 6px; background: #1d4ed8; color: #ffffff; border: none; border-radius: 6px; padding: 6px 14px; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 150ms ease; } .ds-search-field__submit:hover { background: #1e40af; }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "product-card",
+      "description": "Core catalog unit. Image zone → brand/line meta → name/SKU/refrigerants → stock/price/action. Flat at rest, lifted on hover.",
+      "html": "<div class=\"ds-product-card\"><div class=\"ds-product-card__image\"><svg width=\"36\" height=\"36\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#cbd5e1\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"/><path d=\"M7 15h0M2 9.5h20\"/></svg></div><div class=\"ds-product-card__body\"><div class=\"ds-product-card__meta\"><span class=\"ds-product-card__brand\">TECUMSEH</span><span class=\"ds-badge-slate\">CMP</span></div><p class=\"ds-product-card__name\">Compresor Hermético 1HP R-22</p><p class=\"ds-product-card__sku\">SKU: TCH-AJ2432EX</p><div class=\"ds-product-card__tags\"><span class=\"ds-badge-sku\">R-22</span><span class=\"ds-badge-sku\">R-502</span></div><div class=\"ds-product-card__stock\"><span class=\"ds-stock-dot ds-stock-dot--ok\"></span><span class=\"ds-stock-label--ok\">24 en stock</span></div><div class=\"ds-product-card__footer\"><div><p class=\"ds-product-card__price\">$1.850.000</p><p class=\"ds-product-card__currency\">COP · IVA incluido</p></div><button class=\"ds-btn-cta\">Agregar</button></div></div></div>",
+      "css": ".ds-product-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms cubic-bezier(0.33, 1, 0.68, 1); } .ds-product-card:hover { border-color: #bfdbfe; box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.06); transform: translateY(-2px); } .ds-product-card__image { display: flex; align-items: center; justify-content: center; height: 192px; background: #ffffff; border-bottom: 1px solid #f1f5f9; } .ds-product-card__body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; } .ds-product-card__meta { display: flex; align-items: center; justify-content: space-between; } .ds-product-card__brand { font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.05em; } .ds-product-card__name { font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 600; color: #0f172a; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-product-card__sku { font-family: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace; font-size: 11px; color: #94a3b8; } .ds-product-card__tags { display: flex; flex-wrap: wrap; gap: 4px; } .ds-product-card__stock { display: flex; align-items: center; gap: 6px; } .ds-product-card__footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid #f1f5f9; margin-top: 4px; } .ds-product-card__price { font-family: Inter, system-ui, sans-serif; font-size: 19px; font-weight: 800; color: #0f172a; line-height: 1.2; } .ds-product-card__currency { font-family: Inter, system-ui, sans-serif; font-size: 10px; color: #94a3b8; } .ds-stock-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; } .ds-stock-dot--ok { background: #10b981; } .ds-stock-dot--low { background: #f59e0b; } .ds-stock-label--ok { font-family: Inter, system-ui, sans-serif; font-size: 12px; color: #059669; } .ds-stock-label--low { font-family: Inter, system-ui, sans-serif; font-size: 12px; color: #b45309; } .ds-badge-slate { background: #f1f5f9; color: #334155; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; } .ds-badge-sku { background: #f0fdfa; color: #0f766e; font-family: Inter, system-ui, sans-serif; font-size: 10px; font-weight: 500; padding: 2px 5px; border-radius: 3px; } .ds-btn-cta { background: #f97316; color: #ffffff; padding: 7px 11px; border-radius: 7px; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: background-color 150ms ease; } .ds-btn-cta:hover { background: #ea580c; }"
+    },
+    {
+      "name": "App Badge — Line Code",
+      "kind": "chip",
+      "refersTo": "button-primary",
+      "description": "Product line classification chip. Slate variant for line codes (CMP, VAL, REF). Orange variant for NUEVO / low-stock alerts.",
+      "html": "<div style=\"display:flex;gap:8px;flex-wrap:wrap;\"><span class=\"ds-badge-slate\">CMP</span><span class=\"ds-badge-slate\">VAL</span><span class=\"ds-badge-orange\">NUEVO</span><span class=\"ds-badge-sku\">R-410A</span></div>",
+      "css": ".ds-badge-slate { background: #f1f5f9; color: #334155; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; display: inline-block; } .ds-badge-orange { background: #fff7ed; color: #c2410c; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; display: inline-block; } .ds-badge-sku { background: #f0fdfa; color: #0f766e; font-family: Inter, system-ui, sans-serif; font-size: 10px; font-weight: 500; padding: 2px 5px; border-radius: 3px; display: inline-block; }"
+    },
+    {
+      "name": "Category Nav Item",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Dark-bar product line navigation. Always visible. Horizontally scrollable on mobile.",
+      "html": "<nav class=\"ds-cat-nav\"><a class=\"ds-cat-nav__item ds-cat-nav__item--active\" href=\"#\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"/></svg>Compresores</a><a class=\"ds-cat-nav__item\" href=\"#\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z\"/><path d=\"M12 6v6l4 2\"/></svg>Válvulas</a><a class=\"ds-cat-nav__item\" href=\"#\">Refrigerantes</a></nav>",
+      "css": ".ds-cat-nav { background: #0f172a; display: flex; align-items: center; gap: 2px; padding: 0 12px; overflow-x: auto; scrollbar-width: none; } .ds-cat-nav::-webkit-scrollbar { display: none; } .ds-cat-nav__item { display: inline-flex; align-items: center; gap: 6px; padding: 10px 10px; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 500; color: #cbd5e1; border-radius: 6px; text-decoration: none; white-space: nowrap; transition: color 150ms ease, background-color 150ms ease; flex-shrink: 0; } .ds-cat-nav__item:hover { color: #ffffff; background: #1e293b; } .ds-cat-nav__item--active { color: #ffffff; background: #1e293b; }"
+    },
+    {
+      "name": "Stock Status Indicator",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Inline stock availability signal on product cards. Green dot for available, amber for low stock. Used only for stock context.",
+      "html": "<div style=\"display:flex;flex-direction:column;gap:8px;\"><div class=\"ds-stock\"><span class=\"ds-stock__dot ds-stock__dot--ok\"></span><span class=\"ds-stock__label ds-stock__label--ok\">24 en stock</span></div><div class=\"ds-stock\"><span class=\"ds-stock__dot ds-stock__dot--low\"></span><span class=\"ds-stock__label ds-stock__label--low\">Solo 3 en stock</span></div></div>",
+      "css": ".ds-stock { display: inline-flex; align-items: center; gap: 6px; } .ds-stock__dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; } .ds-stock__dot--ok { background: #10b981; } .ds-stock__dot--low { background: #f59e0b; } .ds-stock__label { font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 400; } .ds-stock__label--ok { color: #059669; } .ds-stock__label--low { color: #b45309; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Technical Sourcebook",
+    "overview": "FSP Parts is built like a well-typeset industrial parts catalog. The interface is a reference tool first and a storefront never — every layout decision, typographic choice, and color assignment answers a question a HVAC/R technician might have while looking for a compressor under a tight deadline. Clarity, density, and unambiguous hierarchy are the design virtues. White space is earned by information, not given for aesthetic comfort.\n\nThe palette is anchored in two committed colors: Blueprint Indigo (#1d4ed8) for authoritative actions and navigation, and Thermal Orange (#f97316) for the singular purchase CTA. The background — Clean Field White (#f8fafc) — is deliberately low-noise, giving technical data (SKUs, specs, refrigerant codes) room to be read, not styled.\n\nThis system explicitly rejects the vocabulary of consumer retail. No impulse-buy urgency patterns, no promotional badge inflation, no hero sections that prioritize spectacle over the catalog. A technician arriving with a part number should feel they have reached a trusted supplier's reference shelf, not a flash-sale storefront.",
+    "keyCharacteristics": [
+      "Catalog-first hierarchy: product data is the protagonist, not hero imagery",
+      "Density is a feature, not a bug — B2B users want specs, not padding",
+      "Technical vocabulary (SKUs, part codes, refrigerant identifiers) is treated as first-class typography with its own mono typeface",
+      "Actions are solid and direct; affordances are unambiguous and filled, never ghost-only",
+      "Color carries function — status, action, identity — never decoration"
+    ],
+    "rules": [
+      { "name": "The One CTA Rule", "body": "Thermal Orange appears on one interactive element per screen: the primary purchase or search action. A second orange element anywhere on the screen dilutes the signal and starts to look like consumer retail.", "section": "colors" },
+      { "name": "The Neutral Infrastructure Rule", "body": "Every color token has a named functional role. Using any color for visual interest or variety is prohibited. If you cannot name the function, remove the color.", "section": "colors" },
+      { "name": "The SKU-as-Data Rule", "body": "Part numbers, SKUs, and refrigerant codes are rendered in the mono stack. They are identifiers — not prose, not decorative content. They do not get colored, italicized, or animated.", "section": "typography" },
+      { "name": "The Eyebrow Prohibition", "body": "Small all-caps kicker labels above section headings are a 2023-era SaaS scaffold. Remove existing instances. Section hierarchy is established through weight and size contrast alone.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "A component at rest is flat. A shadow means either this element has changed state or this layer is above content. Decorative shadows on static cards are prohibited.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Blueprint Indigo (#1d4ed8) as the default action color and Thermal Orange (#f97316) as the one purchase/conversion CTA per screen.",
+      "Do render SKUs, part numbers, and refrigerant codes in the mono stack.",
+      "Do use stock status colors (Stock Green, Stock Amber) only for stock indicators.",
+      "Do keep the category nav always visible as a horizontal scroll bar on mobile.",
+      "Do treat density as a feature: product grids can display more data than a consumer catalog.",
+      "Do use flat-at-rest, shadow-on-hover elevation on interactive surfaces.",
+      "Do keep section hierarchy from weight and size contrast — no uppercase eyebrow labels.",
+      "Do establish line hierarchy in the product card top-to-bottom: image → brand/line → name/SKU/refrigerants → stock/price/action."
+    ],
+    "donts": [
+      "Don't use consumer / retail e-commerce patterns: sale badges, countdown timers, urgency overlays, flash-sale promotional banners.",
+      "Don't extend the generic blue-and-orange Tailwind SaaS palette further in its current default form.",
+      "Don't use gradient text (background-clip: text with a gradient). The .hvac-gradient animation in LandingView.vue is a current violation.",
+      "Don't use uppercase-tracked kicker labels above section headings. The current codebase uses these; remove existing instances.",
+      "Don't use border-left greater than 1px as a colored accent stripe on any component.",
+      "Don't hide or de-emphasize technical data. SKUs are not metadata to be grayed out.",
+      "Don't use opacity to represent the disabled state. Use the explicit disabled color pair: background #e2e8f0, color #94a3b8.",
+      "Don't add decorative shadows to cards at rest."
+    ]
+  }
+}
