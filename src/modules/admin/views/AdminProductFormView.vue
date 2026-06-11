@@ -535,7 +535,7 @@ async function handleSave() {
     if (isEditMode.value) {
       // Exclude stock from edit payload — stock is ledger-managed via stock_movements only
       const { stock: _stock, ...editPayload } = payload
-      await updateProduct(route.params.id as string, editPayload as ProductPayload)
+      await updateProduct(route.params.id as string, editPayload)
     } else {
       // Always create with stock=0; initial stock is managed via the movement ledger
       const newId = await createProduct({ ...payload, stock: 0 })
@@ -544,7 +544,7 @@ async function handleSave() {
           await createInitialStockMovement(newId, stockInicial.value)
         }
       } catch (err) {
-        await deleteProduct(newId)
+        try { await deleteProduct(newId) } catch { /* best-effort cleanup */ }
         throw err
       }
     }

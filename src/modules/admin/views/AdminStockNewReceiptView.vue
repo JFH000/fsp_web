@@ -47,7 +47,7 @@
           Agregar producto
         </button>
       </div>
-      <p v-if="allProductsError" class="mb-3 text-xs text-red-500">{{ allProductsError }}</p>
+      <div v-if="allProductsError" class="mb-3 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{{ allProductsError }}</div>
 
       <!-- Product picker combobox -->
       <div v-if="showPicker" class="mb-4">
