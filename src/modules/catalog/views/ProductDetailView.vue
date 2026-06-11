@@ -108,13 +108,22 @@
 
           <!-- Price -->
           <div class="bg-white rounded-2xl p-5 border border-slate-200">
-            <template v-if="product.priceCop != null">
-              <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.priceCop) }}</p>
-              <p class="text-xs text-slate-400 mb-4">COP · IVA incluido</p>
+            <!-- WS discounted price -->
+            <template v-if="isDiscounted">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="text-sm text-slate-400 line-through">{{ formatCurrency(basePrice!) }}</span>
+                <AppBadge :variant="tierLabel!.startsWith('OEM') ? 'orange' : 'blue'" size="xs">{{ tierLabel }}</AppBadge>
+              </div>
+              <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(effectivePrice!) }}</p>
+              <div class="flex items-center gap-4 mb-4">
+                <p class="text-xs text-slate-400">{{ product.priceCop != null ? 'COP · IVA incluido' : 'USD' }}</p>
+                <p v-if="bulkPrice" class="text-xs font-medium text-slate-500">+10 uds: {{ formatCurrency(bulkPrice) }}</p>
+              </div>
             </template>
-            <template v-else-if="product.priceUsd != null">
-              <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(product.priceUsd) }}</p>
-              <p class="text-xs text-slate-400 mb-4">USD</p>
+            <!-- Regular price -->
+            <template v-else-if="effectivePrice != null">
+              <p class="text-4xl font-extrabold text-slate-900 mb-1">{{ formatCurrency(effectivePrice) }}</p>
+              <p class="text-xs text-slate-400 mb-4">{{ product.priceCop != null ? 'COP · IVA incluido' : 'USD' }}</p>
             </template>
             <template v-else>
               <p class="text-xl font-semibold text-slate-400 mb-4">Consultar precio</p>
@@ -188,6 +197,7 @@ import { useAuthModal } from '@/modules/auth/composables/useAuthModal'
 import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
 import { formatCurrency } from '@/shared/utils/currency'
 import AppBadge from '@/shared/components/ui/AppBadge.vue'
+import { useProductPrice } from '@/modules/catalog/composables/useProductPrice'
 
 const route          = useRoute()
 const catalog        = useCatalogStore()
@@ -200,6 +210,8 @@ const product    = computed(() => catalog.getById(route.params.id as string))
 const activeImage = ref(0)
 const qty         = ref(1)
 const justAdded   = ref(false)
+
+const { effectivePrice, basePrice, isDiscounted, tierLabel, bulkPrice } = useProductPrice(product, qty)
 
 const currentImage = computed(() => {
   const imgs = product.value?.images ?? []
