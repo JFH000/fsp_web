@@ -59,7 +59,7 @@ export interface CartItem {
   quantity: number
 }
 
-export type UserRole = 'customer' | 'technician' | 'distributor' | 'admin'
+export type UserRole = 'admin' | 'customer' | 'customer_ws1' | 'customer_ws3'
 
 export interface UserProfile {
   id: string
@@ -68,6 +68,7 @@ export interface UserProfile {
   phone: string | null
   role: UserRole
   company: string | null
+  notes: string | null
 }
 
 export interface FilterState {
