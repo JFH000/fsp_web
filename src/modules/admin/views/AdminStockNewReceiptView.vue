@@ -47,6 +47,7 @@
           Agregar producto
         </button>
       </div>
+      <p v-if="allProductsError" class="mb-3 text-xs text-red-500">{{ allProductsError }}</p>
 
       <!-- Product picker combobox -->
       <div v-if="showPicker" class="mb-4">
@@ -185,14 +186,17 @@ const totalCost  = computed(() => lines.value.reduce((s, l) => s + (l.quantity |
 const canSubmit  = computed(() => form.reference.trim() && lines.value.length > 0 && lines.value.every(l => l.quantity >= 1))
 
 // ── Product picker ────────────────────────────────────────────────────────────
-const showPicker   = ref(false)
-const pickerQuery  = ref('')
-const pickerInput  = ref<HTMLInputElement | null>(null)
-const allProducts  = ref<ProductStockRow[]>([])
+const showPicker      = ref(false)
+const pickerQuery     = ref('')
+const pickerInput     = ref<HTMLInputElement | null>(null)
+const allProducts     = ref<ProductStockRow[]>([])
+const allProductsError = ref<string | null>(null)
 
 // Load product catalogue once
 ;(async () => {
-  try { allProducts.value = await listProductsWithStock() } catch { /* silent */ }
+  try { allProducts.value = await listProductsWithStock() } catch (err) {
+    allProductsError.value = (err as Error).message ?? 'Error al cargar productos'
+  }
 })()
 
 // Auto-focus input when picker opens

@@ -140,6 +140,7 @@
               v-model.number="stockInicial"
               type="number"
               min="0"
+              step="1"
               class="field-input"
               placeholder="0"
             />
@@ -329,6 +330,7 @@ import {
   getAdminProduct,
   createProduct,
   updateProduct,
+  deleteProduct,
   type ProductPayload,
 } from '@/modules/admin/services/admin.service'
 import { createInitialStockMovement } from '@/modules/admin/services/stock.service'
@@ -531,12 +533,19 @@ async function handleSave() {
     }
 
     if (isEditMode.value) {
-      await updateProduct(route.params.id as string, payload)
+      // Exclude stock from edit payload — stock is ledger-managed via stock_movements only
+      const { stock: _stock, ...editPayload } = payload
+      await updateProduct(route.params.id as string, editPayload as ProductPayload)
     } else {
       // Always create with stock=0; initial stock is managed via the movement ledger
       const newId = await createProduct({ ...payload, stock: 0 })
-      if (stockInicial.value > 0) {
-        await createInitialStockMovement(newId, stockInicial.value)
+      try {
+        if (stockInicial.value > 0) {
+          await createInitialStockMovement(newId, stockInicial.value)
+        }
+      } catch (err) {
+        await deleteProduct(newId)
+        throw err
       }
     }
     router.push('/admin/products')
