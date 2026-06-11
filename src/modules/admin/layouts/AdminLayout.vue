@@ -47,14 +47,15 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { Package, Layers, Settings, ExternalLink } from '@lucide/vue'
+import { Package, Layers, Settings, Users, ExternalLink } from '@lucide/vue'
 import ProfileDropdown from '@/modules/auth/components/ProfileDropdown.vue'
 
 const route = useRoute()
 
 const navItems = [
-  { to: '/admin/products', label: 'Productos', icon: Package  },
-  { to: '/admin/catalog',  label: 'Catálogo',  icon: Layers   },
-  { to: '/admin/settings', label: 'CSV',        icon: Settings },
+  { to: '/admin/products',  label: 'Productos', icon: Package  },
+  { to: '/admin/catalog',   label: 'Catálogo',  icon: Layers   },
+  { to: '/admin/customers', label: 'Clientes',  icon: Users    },
+  { to: '/admin/settings',  label: 'CSV',        icon: Settings },
 ]
 </script>
