@@ -86,6 +86,12 @@ class _BrowserWorker:
         self._thread.start()
 
     def _run(self) -> None:
+        import asyncio
+        import sys
+        # Restore a real ProactorEventLoop policy so sync_playwright can spawn
+        # its subprocess driver — Jupyter's tornado patch breaks asyncio.new_event_loop()
+        if sys.platform == "win32":
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
