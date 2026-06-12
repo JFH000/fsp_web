@@ -107,7 +107,18 @@
 
       <!-- ── Precios y stock ─────────────────────────────────── -->
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5">Precios y stock</h2>
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Precios y stock</h2>
+          <button
+            type="button"
+            @click="autoPrice"
+            :disabled="!form.price_cop"
+            class="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Zap class="h-4 w-4" />
+            Auto precio
+          </button>
+        </div>
         <div class="grid grid-cols-3 gap-4 mb-4">
           <div>
             <label class="field-label">Precio USD</label>
@@ -324,7 +335,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ChevronRight, Loader2, Save, Plus, X, ImagePlus } from '@lucide/vue'
+import { ChevronRight, Loader2, Save, Plus, X, ImagePlus, Zap } from '@lucide/vue'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
 import { supabase } from '@/core/supabase/client'
 import {
@@ -335,6 +346,9 @@ import {
   type ProductPayload,
 } from '@/modules/admin/services/admin.service'
 import { createInitialStockMovement } from '@/modules/admin/services/stock.service'
+import { useToast } from '@/shared/composables/useToast'
+
+const { add: addToast } = useToast()
 
 const route        = useRoute()
 const router       = useRouter()
@@ -464,6 +478,15 @@ function addSpec() {
   form.specs.push({ key: '', value: '', unit: '', group: '' })
 }
 
+function autoPrice() {
+  const cop = Number(form.price_cop)
+  if (!cop) return
+  form.price_ws1 = Math.round(cop * 0.90)
+  form.price_ws2 = Math.round(cop * 0.80)
+  form.price_ws3 = Math.round(cop * 0.78)
+  form.price_ws4 = Math.round(cop * 0.75)
+}
+
 onMounted(async () => {
   if (!isEditMode.value) return
   isLoadingProduct.value = true
@@ -488,7 +511,7 @@ onMounted(async () => {
     form.images          = [...p.images]
     form.refrigerants    = [...p.refrigerants]
     form.specs           = p.specs.map(s => ({
-      key: s.key, value: s.value, unit: s.unit ?? '', group: s.group ?? '',
+      key: s.key || s.label || '', value: s.value, unit: s.unit ?? '', group: s.group ?? '',
     }))
     slugTouched.value = true
   } catch (e: unknown) {
@@ -537,6 +560,11 @@ async function handleSave() {
       // Exclude stock from edit payload — stock is ledger-managed via stock_movements only
       const { stock: _stock, ...editPayload } = payload
       await updateProduct(route.params.id as string, editPayload)
+      addToast({
+        message: 'Producto guardado',
+        href: `/product/${route.params.id}`,
+        linkLabel: 'Ver producto',
+      })
     } else {
       // Always create with stock=0; initial stock is managed via the movement ledger
       const newId = await createProduct({ ...payload, stock: 0 })

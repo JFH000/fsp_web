@@ -98,7 +98,7 @@ export async function listMovements(productId: string): Promise<StockMovement[]>
     .eq('product_id', productId)
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []) as StockMovement[]
+  return (data ?? []) as unknown as StockMovement[]
 }
 
 // ── Mutations ─────────────────────────────────────────────────────────────────

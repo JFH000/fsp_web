@@ -62,7 +62,7 @@ export type AdminProductDetail = {
   is_featured: boolean
   is_new: boolean
   images: string[]
-  specs: Array<{ key: string; value: string; unit?: string; group?: string }>
+  specs: Array<{ key?: string; label?: string; value: string; unit?: string; group?: string }>
   refrigerants: string[]
   brand_id: number | null
   category_id: number | null
