@@ -50,8 +50,19 @@ KNOWN_CATEGORY_SLUGS: set[str] = {
 }
 
 
+_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/125.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "es-CO,es;q=0.9",
+}
+
+
 def fetch_sitemap() -> str:
-    response = httpx.get(SITEMAP_URL, timeout=30, follow_redirects=True)
+    response = httpx.get(SITEMAP_URL, headers=_HEADERS, timeout=30, follow_redirects=True)
     response.raise_for_status()
     return response.text
 
