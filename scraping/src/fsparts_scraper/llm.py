@@ -6,8 +6,8 @@ from openai import OpenAI
 
 from fsparts_scraper.mapper import brand_lookup_text, product_line_lookup_text
 
-NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
-MODEL = "meta/llama-3.3-70b-instruct"
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+MODEL = "llama-3.3-70b-versatile"
 
 SYSTEM_PROMPT = """\
 Eres un extractor de datos de productos HVAC/R. Devuelve ÚNICAMENTE JSON válido, \
@@ -39,8 +39,8 @@ incluyendo los embebidos en el nombre del producto o descripción.
 """
 
 
-_RATE_LIMIT_RPM = 40
-_MIN_INTERVAL = 60.0 / _RATE_LIMIT_RPM  # 1.5 s between calls
+_RATE_LIMIT_RPM = 30  # Groq free tier limit
+_MIN_INTERVAL = 60.0 / _RATE_LIMIT_RPM  # 2.0 s between calls
 _last_call: float = 0.0
 
 
@@ -55,8 +55,8 @@ def _throttled_create(client: OpenAI, **kwargs):
 
 def get_client() -> OpenAI:
     return OpenAI(
-        base_url=NVIDIA_BASE_URL,
-        api_key=os.environ["NVIDIA_API_KEY"],
+        base_url=GROQ_BASE_URL,
+        api_key=os.environ["GROQ_API_KEY"],
     )
 
 
