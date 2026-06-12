@@ -1,6 +1,5 @@
 import json
 import os
-import re
 
 from openai import OpenAI
 
@@ -31,7 +30,7 @@ Schema requerido (respeta exactamente estos nombres de campo):
 Reglas:
 - sku: busca el código de modelo técnico (ej: DK-032S, MT530, YH150C7-100). Si no existe, usa null.
 - name: nombre limpio del producto, sin exceso de mayúsculas.
-- description: resumen técnico en español de 1-3 oraciones, sin marketing.
+- description: resumen técnico en español, sin marketing.
 - specs: extrae TODOS los pares técnicos (voltaje, conexión, presión, capacidad, etc.) \
 incluyendo los embebidos en el nombre del producto o descripción.
 - refrigerants: solo códigos tipo R### (R22, R410A, R404A...) mencionados en cualquier parte.
@@ -61,7 +60,10 @@ def extract_product_data(
     )
     messages = [
         {"role": "system", "content": system},
-        {"role": "user", "content": f"Extrae los datos de este producto:\n\n{html_clean[:max_html_chars]}"},
+        {
+            "role": "user",
+            "content": f"Extrae los datos de este producto:\n\n{html_clean[:max_html_chars]}",
+        },
     ]
 
     response = client.chat.completions.create(
@@ -91,11 +93,12 @@ def extract_product_data(
 
 
 def parse_llm_response(text: str) -> dict | None:
-    """Extract the first JSON object from the LLM response text."""
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if not match:
+    """Extract the first valid JSON object from LLM response text."""
+    start = text.find("{")
+    if start == -1:
         return None
     try:
-        return json.loads(match.group())
+        obj, _ = json.JSONDecoder().raw_decode(text, start)
+        return obj if isinstance(obj, dict) else None
     except json.JSONDecodeError:
         return None
