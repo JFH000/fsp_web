@@ -63,11 +63,11 @@ def extract_images(html: str) -> list[str]:
 
 
 def clean_html(html: str) -> str:
-    """Strip scripts, styles, nav, footer — keep only product body content."""
+    """Strip scripts/styles/nav, return plain text — reduces LLM token usage vs raw HTML."""
     soup = BeautifulSoup(html, "html.parser")
     for tag in soup.find_all(["script", "style", "nav", "footer", "header"]):
         tag.decompose()
-    return str(soup)
+    return soup.get_text(separator="\n", strip=True)
 
 
 import queue

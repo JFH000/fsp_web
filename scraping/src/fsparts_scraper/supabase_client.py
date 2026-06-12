@@ -32,7 +32,7 @@ def upsert_product(checkpoint: dict, sb: Client | None = None) -> None:
     payload = {
         "sku":             checkpoint["sku"],
         "name":            checkpoint["name"],
-        "slug":            checkpoint.get("slug") or make_slug(checkpoint["name"]),
+        "slug":            make_slug(f"{checkpoint.get('name') or checkpoint['sku']} {checkpoint['sku']}"),
         "description":     checkpoint.get("description") or "",
         "price_cop":       checkpoint.get("price_cop"),
         "price_ws1":       checkpoint.get("price_ws1"),

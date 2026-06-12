@@ -6,8 +6,8 @@ from openai import OpenAI
 
 from fsparts_scraper.mapper import brand_lookup_text, product_line_lookup_text
 
-GROQ_BASE_URL = "https://api.groq.com/openai/v1"
-MODEL = "llama-3.3-70b-versatile"
+NIM_BASE_URL = "https://integrate.api.nvidia.com/v1"
+MODEL = "meta/llama-3.3-70b-instruct"
 
 SYSTEM_PROMPT = """\
 Eres un extractor de datos de productos HVAC/R. Devuelve ÚNICAMENTE JSON válido, \
@@ -24,14 +24,14 @@ Schema requerido (respeta exactamente estos nombres de campo):
   "description": "string",
   "brand_id": number | null,
   "product_line_id": number | null,
-  "specs": [{{"label": "string", "value": "string"}}],
+  "specs": [{{"key": "string", "value": "string"}}],
   "refrigerants": ["R22", "R410A"]
 }}
 
 Reglas:
 - sku: busca el código de modelo técnico (ej: DK-032S, MT530, YH150C7-100). Si no existe, usa null.
 - name: nombre limpio del producto, sin exceso de mayúsculas.
-- description: resumen técnico en español, sin marketing.
+- description: copia la descripción completa del producto tal como aparece en la página, en español. Conserva todos los detalles técnicos y de aplicación. Omite solo frases de venta o urgencia ("¡Oferta!", "Compra ya", etc.).
 - specs: extrae TODOS los pares técnicos (voltaje, conexión, presión, capacidad, etc.) \
 incluyendo los embebidos en el nombre del producto o descripción.
 - refrigerants: solo códigos tipo R### (R22, R410A, R404A...) mencionados en cualquier parte.
@@ -39,7 +39,7 @@ incluyendo los embebidos en el nombre del producto o descripción.
 """
 
 
-_RATE_LIMIT_RPM = 30  # Groq free tier
+_RATE_LIMIT_RPM = 40  # NVIDIA NIM free tier
 _MIN_INTERVAL = 60.0 / _RATE_LIMIT_RPM  # 2.0 s between calls
 _last_call: float = 0.0
 
@@ -50,13 +50,13 @@ def _throttled_create(client: OpenAI, **kwargs):
     if elapsed < _MIN_INTERVAL:
         time.sleep(_MIN_INTERVAL - elapsed)
     _last_call = time.monotonic()
-    return _throttled_create(client,**kwargs)
+    return client.chat.completions.create(**kwargs)
 
 
 def get_client() -> OpenAI:
     return OpenAI(
-        base_url=GROQ_BASE_URL,
-        api_key=os.environ["GROQ_API_KEY"],
+        base_url=NIM_BASE_URL,
+        api_key=os.environ["NVIDIA_API_KEY"],
     )
 
 
@@ -81,11 +81,8 @@ def extract_product_data(
         },
     ]
 
-    response = _throttled_create(client,
-        model=MODEL,
-        messages=messages,
-        max_tokens=1024,
-        temperature=0,
+    response = _throttled_create(
+        client, model=MODEL, messages=messages, max_tokens=1024, temperature=0
     )
     text = response.choices[0].message.content or ""
 
@@ -95,11 +92,8 @@ def extract_product_data(
             "Devuelve SOLO el JSON, sin ningún texto adicional.\n\n"
             + messages[-1]["content"]
         )
-        response = _throttled_create(client,
-            model=MODEL,
-            messages=messages,
-            max_tokens=1024,
-            temperature=0,
+        response = _throttled_create(
+            client, model=MODEL, messages=messages, max_tokens=1024, temperature=0
         )
         text = response.choices[0].message.content or ""
         result = parse_llm_response(text)
@@ -114,6 +108,9 @@ def parse_llm_response(text: str) -> dict | None:
         return None
     try:
         obj, _ = json.JSONDecoder().raw_decode(text, start)
-        return obj if isinstance(obj, dict) else None
+        if not isinstance(obj, dict):
+            return None
+        # LLMs sometimes return the string "null" instead of JSON null
+        return {k: (None if v == "null" else v) for k, v in obj.items()}
     except json.JSONDecodeError:
         return None
