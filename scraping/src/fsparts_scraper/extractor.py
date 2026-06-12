@@ -71,17 +71,34 @@ def clean_html(html: str) -> str:
 
 
 async def fetch_product_html(url: str) -> str:
-    """Render a JS-heavy page with Playwright and return the full HTML."""
+    """Render a JS-heavy page with Playwright and return the full HTML.
+
+    Spawns a subprocess to avoid Windows event-loop conflicts (ProactorEventLoop
+    vs the zmq/tornado-patched loop used by Jupyter kernels).
+    """
     import asyncio
-    return await asyncio.to_thread(_fetch_sync, url)
+    return await asyncio.to_thread(_fetch_subprocess, url)
 
 
-def _fetch_sync(url: str) -> str:
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url, wait_until="networkidle", timeout=30000)
-        html = page.content()
-        browser.close()
-    return html
+def _fetch_subprocess(url: str) -> str:
+    import subprocess
+    import sys
+    script = (
+        "from playwright.sync_api import sync_playwright; import sys; "
+        "url=sys.argv[1]; p=sync_playwright().start(); "
+        "b=p.chromium.launch(headless=True); pg=b.new_page(); "
+        "pg.goto(url,wait_until='networkidle',timeout=30000); "
+        "sys.stdout.buffer.write(pg.content().encode('utf-8')); "
+        "b.close(); p.stop()"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script, url],
+        capture_output=True,
+        timeout=60,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Playwright fetch failed for {url}: "
+            + result.stderr.decode("utf-8", errors="replace")[:300]
+        )
+    return result.stdout.decode("utf-8", errors="replace")
