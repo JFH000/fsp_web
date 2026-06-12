@@ -70,35 +70,71 @@ def clean_html(html: str) -> str:
     return str(soup)
 
 
+import queue
+import threading
+
+_worker: "_BrowserWorker | None" = None
+
+
+class _BrowserWorker:
+    """Runs Playwright in a dedicated thread to avoid asyncio event-loop conflicts on Windows."""
+
+    def __init__(self) -> None:
+        self._req: queue.Queue = queue.Queue()
+        self._res: queue.Queue = queue.Queue()
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread.start()
+
+    def _run(self) -> None:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            while True:
+                url = self._req.get()
+                if url is None:
+                    break
+                try:
+                    page = browser.new_page()
+                    page.goto(url, wait_until="load", timeout=30000)
+                    page.wait_for_timeout(2000)
+                    html = page.content()
+                    page.close()
+                    self._res.put(("ok", html))
+                except Exception as e:
+                    self._res.put(("err", str(e)))
+            browser.close()
+
+    def fetch(self, url: str, timeout: int = 60) -> str:
+        self._req.put(url)
+        status, result = self._res.get(timeout=timeout)
+        if status == "err":
+            raise RuntimeError(f"Playwright fetch failed for {url}: {result}")
+        return result
+
+    def close(self) -> None:
+        self._req.put(None)
+        self._thread.join(timeout=10)
+
+
+def _get_worker() -> _BrowserWorker:
+    global _worker
+    if _worker is None:
+        _worker = _BrowserWorker()
+    return _worker
+
+
+def close_browser() -> None:
+    """Shut down the shared Chromium instance. Call once at the end of a scraping session."""
+    global _worker
+    if _worker is not None:
+        _worker.close()
+        _worker = None
+
+
 async def fetch_product_html(url: str) -> str:
     """Render a JS-heavy page with Playwright and return the full HTML.
 
-    Spawns a subprocess to avoid Windows event-loop conflicts (ProactorEventLoop
-    vs the zmq/tornado-patched loop used by Jupyter kernels).
+    Uses a persistent Chromium instance (one launch per session). Call
+    close_browser() when done. Async signature keeps notebook cells unchanged.
     """
-    import asyncio
-    return await asyncio.to_thread(_fetch_subprocess, url)
-
-
-def _fetch_subprocess(url: str) -> str:
-    import subprocess
-    import sys
-    script = (
-        "from playwright.sync_api import sync_playwright; import sys; "
-        "url=sys.argv[1]; p=sync_playwright().start(); "
-        "b=p.chromium.launch(headless=True); pg=b.new_page(); "
-        "pg.goto(url,wait_until='networkidle',timeout=30000); "
-        "sys.stdout.buffer.write(pg.content().encode('utf-8')); "
-        "b.close(); p.stop()"
-    )
-    result = subprocess.run(
-        [sys.executable, "-c", script, url],
-        capture_output=True,
-        timeout=60,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"Playwright fetch failed for {url}: "
-            + result.stderr.decode("utf-8", errors="replace")[:300]
-        )
-    return result.stdout.decode("utf-8", errors="replace")
+    return _get_worker().fetch(url)
