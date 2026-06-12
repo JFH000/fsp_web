@@ -39,7 +39,7 @@ incluyendo los embebidos en el nombre del producto o descripción.
 """
 
 
-_RATE_LIMIT_RPM = 30  # Groq free tier limit
+_RATE_LIMIT_RPM = 30  # Groq free tier
 _MIN_INTERVAL = 60.0 / _RATE_LIMIT_RPM  # 2.0 s between calls
 _last_call: float = 0.0
 
