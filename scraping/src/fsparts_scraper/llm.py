@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from openai import OpenAI
 
@@ -38,6 +39,20 @@ incluyendo los embebidos en el nombre del producto o descripción.
 """
 
 
+_RATE_LIMIT_RPM = 40
+_MIN_INTERVAL = 60.0 / _RATE_LIMIT_RPM  # 1.5 s between calls
+_last_call: float = 0.0
+
+
+def _throttled_create(client: OpenAI, **kwargs):
+    global _last_call
+    elapsed = time.monotonic() - _last_call
+    if elapsed < _MIN_INTERVAL:
+        time.sleep(_MIN_INTERVAL - elapsed)
+    _last_call = time.monotonic()
+    return _throttled_create(client,**kwargs)
+
+
 def get_client() -> OpenAI:
     return OpenAI(
         base_url=NVIDIA_BASE_URL,
@@ -66,7 +81,7 @@ def extract_product_data(
         },
     ]
 
-    response = client.chat.completions.create(
+    response = _throttled_create(client,
         model=MODEL,
         messages=messages,
         max_tokens=1024,
@@ -80,7 +95,7 @@ def extract_product_data(
             "Devuelve SOLO el JSON, sin ningún texto adicional.\n\n"
             + messages[-1]["content"]
         )
-        response = client.chat.completions.create(
+        response = _throttled_create(client,
             model=MODEL,
             messages=messages,
             max_tokens=1024,
