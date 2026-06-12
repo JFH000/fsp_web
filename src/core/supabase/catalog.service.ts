@@ -30,7 +30,7 @@ type DbCategory = {
   description: string | null
 }
 
-type DbSpec = { key: string; value: string; unit?: string; group?: string }
+type DbSpec = { key?: string; label?: string; value: string; unit?: string; group?: string }
 
 type DbProduct = {
   id: string
@@ -112,7 +112,7 @@ function toProduct(r: DbProduct): Product {
     isFeatured:  r.is_featured,
     isNew:       r.is_new,
     images:      r.images,
-    specs:       r.specs,
+    specs:       r.specs.map(s => ({ key: s.key ?? s.label ?? '', value: s.value, unit: s.unit, group: s.group })),
     refrigerants: r.refrigerants,
   }
 }
