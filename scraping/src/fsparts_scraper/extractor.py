@@ -72,12 +72,16 @@ def clean_html(html: str) -> str:
 
 async def fetch_product_html(url: str) -> str:
     """Render a JS-heavy page with Playwright and return the full HTML."""
-    from playwright.async_api import async_playwright
+    import asyncio
+    return await asyncio.to_thread(_fetch_sync, url)
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.goto(url, wait_until="networkidle", timeout=30000)
-        html = await page.content()
-        await browser.close()
+
+def _fetch_sync(url: str) -> str:
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, wait_until="networkidle", timeout=30000)
+        html = page.content()
+        browser.close()
     return html
