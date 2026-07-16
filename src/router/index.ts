@@ -15,7 +15,7 @@ const router = createRouter({
         { path: 'catalog',         name: 'catalog',        component: () => import('@/modules/catalog/views/CatalogView.vue') },
         { path: 'product/:id',     name: 'product-detail', component: () => import('@/modules/catalog/views/ProductDetailView.vue') },
         { path: 'cart',            name: 'cart',           component: () => import('@/modules/cart/views/CartView.vue') },
-        { path: 'checkout',        name: 'checkout',       component: () => import('@/modules/cart/views/CartView.vue') },
+        { path: 'checkout',        name: 'checkout',       component: () => import('@/modules/cart/views/CheckoutView.vue'), meta: { requiresUser: true } },
         { path: 'hvac-calculator', name: 'hvac-calculator',component: () => import('@/modules/hvac/views/HvacCalculatorView.vue') },
       ],
     },
@@ -52,6 +52,14 @@ router.beforeEach(async (to) => {
       return false
     }
     if (!authStore.isAdmin) return { name: 'landing' }
+  }
+
+  if (to.meta.requiresUser) {
+    if (!authStore.isAuthenticated) {
+      const { open } = useAuthModal()
+      open('login')
+      return false
+    }
   }
 
   return true
