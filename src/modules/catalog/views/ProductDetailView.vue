@@ -177,7 +177,9 @@
               </div>
               <button
                 @click="handleAdd"
-                class="flex-1 flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 text-white font-bold py-3 px-6 rounded-xl transition-colors text-base focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
+                :disabled="effectivePrice == null"
+                :title="effectivePrice == null ? 'Este producto requiere cotización' : undefined"
+                class="flex-1 flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-6 rounded-xl transition-colors text-base focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
               >
                 <component :is="justAdded ? Check : ShoppingCart" class="h-5 w-5" aria-hidden="true" />
                 {{ justAdded ? '¡Agregado al carrito!' : 'Agregar al carrito' }}

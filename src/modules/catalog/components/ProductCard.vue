@@ -93,7 +93,8 @@
         </div>
         <button
           @click.prevent="handleAdd"
-          :disabled="adding"
+          :disabled="adding || effectivePrice == null"
+          :title="effectivePrice == null ? 'Este producto requiere cotización' : undefined"
           class="flex items-center gap-1.5 bg-brand-700 hover:bg-brand-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
         >
           <component :is="adding ? Check : ShoppingCart" class="h-3.5 w-3.5" />
