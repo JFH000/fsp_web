@@ -54,14 +54,6 @@ router.beforeEach(async (to) => {
     if (!authStore.isAdmin) return { name: 'landing' }
   }
 
-  if (to.meta.requiresUser) {
-    if (!authStore.isAuthenticated) {
-      const { open } = useAuthModal()
-      open('login')
-      return false
-    }
-  }
-
   return true
 })
 

@@ -48,7 +48,7 @@ El frontend (Vue 3 + Vite) habla directamente con Supabase — **no hay servidor
 | **Postgres (schema `public`)** | 5 tablas: catálogo (4), usuarios (1) |
 | **Funciones Postgres** | 4: `is_admin`, `handle_new_user`, `prevent_role_change`, `rls_auto_enable` |
 | **Triggers** | Alta de perfil al registrarse, inmutabilidad del rol, RLS automático en tablas nuevas |
-| **Edge Functions** | 0 — la función `sync-sheets` fue removida (nota: aún requiere borrado manual desde el Dashboard de Supabase, ver detalle en el historial de este cambio) |
+| **Edge Functions** | 0 en uso — `sync-sheets` quedó decomisionada del app; borrado manual desde el Dashboard de Supabase aún pendiente |
 | **Storage** | 1 bucket: `product-images` (público, 5 MB, jpeg/png/webp) |
 | **Extensiones activas** | `uuid-ossp`, `pgcrypto`, `pg_stat_statements`, `supabase_vault`, `plpgsql` (solo las de base; nada exótico) |
 | **Auth** | Email/password. El registro dispara la creación automática de `user_profiles` |

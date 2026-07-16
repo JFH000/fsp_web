@@ -10,11 +10,6 @@
           <button class="modal-close-btn" @click="close" aria-label="Cerrar">
             <X class="h-4 w-4" />
           </button>
-          <!-- Hint contextual (ej. desde favoritos) -->
-          <div v-if="hint && mode === 'login'" class="flex items-center gap-2.5 pl-4 pr-10 py-3 bg-amber-50 border-b border-amber-100 rounded-t-2xl">
-            <Star class="h-4 w-4 flex-shrink-0 text-amber-500 fill-amber-400" />
-            <span class="text-sm text-amber-800 font-medium">{{ hint }}</span>
-          </div>
           <LoginForm      v-if="mode === 'login'" />
           <RegisterForm   v-else-if="mode === 'register'" />
           <OnboardingForm v-else-if="mode === 'onboarding'" />
@@ -27,14 +22,14 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import { X, Star } from '@lucide/vue'
+import { X } from '@lucide/vue'
 import { useAuthModal } from '../composables/useAuthModal'
 import LoginForm      from './LoginForm.vue'
 import RegisterForm   from './RegisterForm.vue'
 import OnboardingForm from './OnboardingForm.vue'
 import EditProfileForm from './EditProfileForm.vue'
 
-const { mode, hint, close } = useAuthModal()
+const { mode, close } = useAuthModal()
 
 watch(mode, (val) => {
   if (val) {
