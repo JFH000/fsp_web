@@ -60,7 +60,7 @@
                 <p class="text-sm font-semibold text-slate-900 line-clamp-2 hover:text-brand-700">{{ item.product.name }}</p>
               </RouterLink>
               <p class="text-xs text-slate-400 font-mono">{{ item.product.sku }}</p>
-              <p class="text-xs text-brand-700 font-bold mt-1">{{ formatCurrency(item.product.priceCop ?? item.product.priceUsd ?? 0) }}</p>
+              <p class="text-xs text-brand-700 font-bold mt-1">{{ formatCurrency(cart.lineUnitPrice(item)) }}</p>
             </div>
             <div class="flex flex-col items-end justify-between flex-shrink-0">
               <button
