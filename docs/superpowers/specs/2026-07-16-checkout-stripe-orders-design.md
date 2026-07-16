@@ -113,6 +113,14 @@ Stripe calls this directly with no user JWT — authenticity is verified via the
 2. On `checkout.session.completed`: look up the order by `metadata.order_id`, set `status = 'paid'`, store `stripe_payment_intent_id`, set `paid_at = now()`. The update is idempotent — safe if Stripe redelivers the event.
 3. Other event types (e.g. `checkout.session.expired`) are ignored; the order simply stays `pending_payment`.
 
+### Why not Supabase's official Stripe integrations
+
+Supabase offers two official Stripe integrations, both considered and rejected for this design:
+- **Stripe Wrapper (FDW):** read-only — exposes Stripe objects as foreign tables for querying, cannot create a Checkout Session (a multi-parameter API action, not a queryable resource). Also requires its own private schema + `security definer` functions to expose safely (no RLS on foreign tables). Not needed since the webhook already gives authoritative payment status.
+- **Stripe Sync Engine (alpha):** a standalone Docker/Fastify service that mirrors the *entire* Stripe object graph (customers, charges, invoices, subscriptions, prices...) into Postgres — cannot run as a Supabase Edge Function, needs separate hosting this project doesn't have, and Supabase's own repo warns it "lacks tight access controls, should only be deployed internally." Overkill for reacting to a single event type.
+
+Both custom Edge Functions below remain the right fit: no added infrastructure, minimal attack surface, exactly the two operations (create a session, react to one webhook event) this flow needs.
+
 ### Required secrets
 
 `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` must be set as Supabase Edge Function secrets. As with the earlier `sync-sheets` function, this environment has no local Supabase CLI and the connected MCP toolset has no secrets-management tool discovered so far — setting these, and configuring the webhook endpoint URL in the Stripe Dashboard, will likely be a manual step for the user, to be confirmed during implementation.
