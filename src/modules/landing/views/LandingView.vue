@@ -140,32 +140,6 @@
       </div>
     </section>
 
-    <!-- ─────────────────── FEATURED PRODUCTS ─────────────────── -->
-    <section
-      ref="featuredRef"
-      class="bg-slate-50/80 py-16 sr-section"
-      :class="featuredVisible ? 'sr-active' : featuredReady ? 'sr-pending' : ''"
-    >
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-baseline justify-between mb-8">
-          <h2 class="text-2xl font-bold text-slate-900 text-balance">Productos Destacados</h2>
-          <RouterLink
-            to="/catalog"
-            class="text-sm font-medium text-brand-700 hover:text-brand-800 flex items-center gap-1 transition-colors"
-          >
-            Ver todos <ArrowRight class="h-4 w-4" aria-hidden="true" />
-          </RouterLink>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          <ProductCard
-            v-for="product in catalogStore.featuredProducts"
-            :key="product.id"
-            :product="product"
-          />
-        </div>
-      </div>
-    </section>
-
     <!-- ─────────────────── HVAC CALC BANNER ─────────────────── -->
     <section
       ref="calcRef"
@@ -241,7 +215,6 @@ import {
   Wrench, Settings2, Gauge, Filter, Thermometer, Layers, Cpu,
 } from '@lucide/vue'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
-import ProductCard from '@/modules/catalog/components/ProductCard.vue'
 
 const router       = useRouter()
 const catalogStore = useCatalogStore()
@@ -288,17 +261,14 @@ function animateCount(target: { value: number }, end: number, duration: number) 
 
 // ─── Scroll-reveal state ───
 const linesRef    = ref<HTMLElement | null>(null)
-const featuredRef = ref<HTMLElement | null>(null)
 const calcRef     = ref<HTMLElement | null>(null)
 const trustRef    = ref<HTMLElement | null>(null)
 
 const linesReady    = ref(false)
-const featuredReady = ref(false)
 const calcReady     = ref(false)
 const trustReady    = ref(false)
 
 const linesVisible    = ref(false)
-const featuredVisible = ref(false)
 const calcVisible     = ref(false)
 const trustVisible    = ref(false)
 
@@ -335,10 +305,9 @@ onMounted(async () => {
 
   // Scroll-reveal sections — set ready after paint so default visible state is established
   const reveals = [
-    { ref: linesRef,    ready: linesReady,    visible: linesVisible },
-    { ref: featuredRef, ready: featuredReady, visible: featuredVisible },
-    { ref: calcRef,     ready: calcReady,     visible: calcVisible },
-    { ref: trustRef,    ready: trustReady,    visible: trustVisible },
+    { ref: linesRef, ready: linesReady, visible: linesVisible },
+    { ref: calcRef,  ready: calcReady,  visible: calcVisible },
+    { ref: trustRef, ready: trustReady, visible: trustVisible },
   ]
 
   for (const item of reveals) {

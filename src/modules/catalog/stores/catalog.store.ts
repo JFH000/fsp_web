@@ -112,11 +112,6 @@ export const useCatalogStore = defineStore('catalog', () => {
     return list
   })
 
-  const featuredProducts = computed(() => {
-    const marked = allProducts.value.filter(p => p.isFeatured)
-    return (marked.length ? marked : allProducts.value).slice(0, 8)
-  })
-
   // ── Pagination ────────────────────────────────────────────────────────────────
   const PAGE_SIZE   = 21
   const currentPage = ref(1)
@@ -137,15 +132,6 @@ export const useCatalogStore = defineStore('catalog', () => {
   watch(filteredProducts, () => { currentPage.value = 1 })
 
   // ── Supabase init ─────────────────────────────────────────────────────────────
-  function shuffle<T>(arr: T[]): T[] {
-    const a = [...arr]
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[a[i], a[j]] = [a[j], a[i]]
-    }
-    return a
-  }
-
   async function initialize() {
     isLoading.value = true
     try {
@@ -156,7 +142,7 @@ export const useCatalogStore = defineStore('catalog', () => {
         fetchCategories(),
       ])
 
-      allProducts.value     = shuffle(products)
+      allProducts.value     = products
       allProductLines.value = productLines.map(line => ({
         ...line,
         productCount: products.filter(p => p.productLine.id === line.id).length,
@@ -199,7 +185,6 @@ export const useCatalogStore = defineStore('catalog', () => {
     // computed
     activeFilterCount,
     filteredProducts,
-    featuredProducts,
     currentPage,
     totalPages,
     paginatedProducts,
