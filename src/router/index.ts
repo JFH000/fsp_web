@@ -31,7 +31,6 @@ const router = createRouter({
         { path: 'products/new',      name: 'admin-product-new', component: () => import('@/modules/admin/views/AdminProductFormView.vue') },
         { path: 'products/:id/edit', name: 'admin-product-edit',component: () => import('@/modules/admin/views/AdminProductFormView.vue') },
         { path: 'catalog',           name: 'admin-catalog',     component: () => import('@/modules/admin/views/AdminCatalogView.vue') },
-        { path: 'settings',          name: 'admin-settings',    component: () => import('@/modules/admin/views/AdminSettingsView.vue') },
         { path: 'customers',         name: 'admin-customers',   component: () => import('@/modules/admin/views/AdminCustomersView.vue') },
       ],
     },
