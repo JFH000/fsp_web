@@ -17,6 +17,8 @@ const router = createRouter({
         { path: 'cart',            name: 'cart',           component: () => import('@/modules/cart/views/CartView.vue') },
         { path: 'checkout',        name: 'checkout',       component: () => import('@/modules/cart/views/CheckoutView.vue'), meta: { requiresUser: true } },
         { path: 'pedido-confirmado', name: 'order-confirmation', component: () => import('@/modules/orders/views/OrderConfirmationView.vue'), meta: { requiresUser: true } },
+        { path: 'orders',            name: 'orders',            component: () => import('@/modules/orders/views/OrdersView.vue'), meta: { requiresUser: true } },
+        { path: 'orders/:id',        name: 'order-detail',      component: () => import('@/modules/orders/views/OrderDetailView.vue'), meta: { requiresUser: true } },
         { path: 'hvac-calculator', name: 'hvac-calculator',component: () => import('@/modules/hvac/views/HvacCalculatorView.vue') },
       ],
     },

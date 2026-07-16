@@ -28,6 +28,10 @@
 
         <!-- Acciones -->
         <div class="dropdown-body">
+          <button class="dropdown-item" @click="onOrders">
+            <Package class="h-3.5 w-3.5 flex-shrink-0" />
+            Mis pedidos
+          </button>
           <button class="dropdown-item" @click="onEditProfile">
             <Pencil class="h-3.5 w-3.5 flex-shrink-0" />
             Editar perfil
@@ -45,12 +49,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Pencil, LogOut } from '@lucide/vue'
+import { useRouter } from 'vue-router'
+import { Pencil, LogOut, Package } from '@lucide/vue'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
 import { useAuthModal } from '../composables/useAuthModal'
 
 const authStore = useAuthStore()
 const { open }  = useAuthModal()
+const router    = useRouter()
 
 const isOpen       = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
@@ -74,6 +80,11 @@ onUnmounted(() => document.removeEventListener('click', handleOutsideClick))
 function onEditProfile() {
   isOpen.value = false
   open('editProfile')
+}
+
+function onOrders() {
+  isOpen.value = false
+  router.push('/orders')
 }
 
 async function onSignOut() {

@@ -15,3 +15,23 @@ export async function fetchOrderBySessionId(sessionId: string): Promise<Order | 
   if (error) throw new Error(error.message)
   return data as Order | null
 }
+
+export async function listMyOrders(): Promise<Order[]> {
+  const { data, error } = await getSb()
+    .from('orders')
+    .select('*')
+    .neq('status', 'pending_payment')
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as Order[]
+}
+
+export async function fetchOrderById(id: string): Promise<Order | null> {
+  const { data, error } = await getSb()
+    .from('orders')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return data as Order | null
+}
