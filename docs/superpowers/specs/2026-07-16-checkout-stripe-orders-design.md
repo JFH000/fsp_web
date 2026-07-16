@@ -102,7 +102,7 @@ This mirrors the security posture already established for `stock_movements`/`app
 3. Looks up each `product_id` in `products`, computes the effective per-line price using the same tier rules as `useProductPrice.ts` (this logic is necessarily duplicated in Deno/TypeScript on the Edge Function side — the implementation plan should keep the two copies' rules explicitly cross-referenced/commented so they can't silently drift).
 4. If a product no longer exists or has no resolvable price, that line is dropped and the response tells the client which item(s) were removed, before ever creating a Stripe session for it.
 5. Inserts the `orders` row with `status = 'pending_payment'` and the computed items snapshot.
-6. Creates the Stripe Checkout Session: `mode: 'payment'`, currency `cop` (zero-decimal in Stripe, matching how the site already displays whole-peso prices), `metadata: { order_id }`, `success_url`/`cancel_url` pointing at the frontend routes below.
+6. Creates the Stripe Checkout Session: `mode: 'payment'`, currency `cop` (a standard 2-decimal currency in Stripe, *not* zero-decimal — `unit_amount` is the whole-peso price ×100, i.e. centavos; verified directly against Stripe's currency docs during implementation after an earlier draft of this spec incorrectly assumed COP was zero-decimal like JPY/KRW), `metadata: { order_id }`, `success_url`/`cancel_url` pointing at the frontend routes below.
 7. Returns `{ url }`; the client does a full-page redirect (`window.location.href = url`). No Stripe.js / `@stripe/stripe-js` package is needed client-side since we never mount Stripe Elements.
 
 ### `stripe-webhook` (`verify_jwt: false`)
