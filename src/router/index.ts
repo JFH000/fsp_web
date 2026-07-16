@@ -33,8 +33,6 @@ const router = createRouter({
         { path: 'catalog',           name: 'admin-catalog',     component: () => import('@/modules/admin/views/AdminCatalogView.vue') },
         { path: 'settings',          name: 'admin-settings',    component: () => import('@/modules/admin/views/AdminSettingsView.vue') },
         { path: 'customers',         name: 'admin-customers',   component: () => import('@/modules/admin/views/AdminCustomersView.vue') },
-        { path: 'stock',     name: 'admin-stock',            component: () => import('@/modules/admin/views/AdminStockView.vue') },
-        { path: 'stock/new', name: 'admin-stock-new-receipt', component: () => import('@/modules/admin/views/AdminStockNewReceiptView.vue') },
       ],
     },
   ],

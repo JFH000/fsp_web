@@ -135,21 +135,9 @@
             </div>
           </div>
           <div>
-            <label class="field-label">
-              {{ isEditMode ? 'Stock' : 'Stock inicial' }}
-            </label>
+            <label class="field-label">Stock</label>
             <input
-              v-if="isEditMode"
               v-model="form.stock"
-              type="number"
-              min="0"
-              readonly
-              class="field-input cursor-default opacity-60"
-              placeholder="0"
-            />
-            <input
-              v-else
-              v-model.number="stockInicial"
               type="number"
               min="0"
               step="1"
@@ -342,10 +330,8 @@ import {
   getAdminProduct,
   createProduct,
   updateProduct,
-  deleteProduct,
   type ProductPayload,
 } from '@/modules/admin/services/admin.service'
-import { createInitialStockMovement } from '@/modules/admin/services/stock.service'
 import { useToast } from '@/shared/composables/useToast'
 
 const { add: addToast } = useToast()
@@ -367,7 +353,6 @@ const fileInput        = ref<HTMLInputElement | null>(null)
 const isUploading      = ref(false)
 const isDragging       = ref(false)
 const uploadError      = ref('')
-const stockInicial     = ref<number>(0)
 
 function showError(msg: string) {
   pageError.value = msg
@@ -557,25 +542,14 @@ async function handleSave() {
     }
 
     if (isEditMode.value) {
-      // Exclude stock from edit payload — stock is ledger-managed via stock_movements only
-      const { stock: _stock, ...editPayload } = payload
-      await updateProduct(route.params.id as string, editPayload)
+      await updateProduct(route.params.id as string, payload)
       addToast({
         message: 'Producto guardado',
         href: `/product/${route.params.id}`,
         linkLabel: 'Ver producto',
       })
     } else {
-      // Always create with stock=0; initial stock is managed via the movement ledger
-      const newId = await createProduct({ ...payload, stock: 0 })
-      try {
-        if (stockInicial.value > 0) {
-          await createInitialStockMovement(newId, stockInicial.value)
-        }
-      } catch (err) {
-        try { await deleteProduct(newId) } catch { /* best-effort cleanup */ }
-        throw err
-      }
+      await createProduct(payload)
     }
     router.push('/admin/products')
   } catch (e: unknown) {

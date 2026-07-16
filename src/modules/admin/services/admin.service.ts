@@ -29,9 +29,6 @@ export type ProductPayload = {
   refrigerants: string[]
 }
 
-/** Payload for updates — stock is ledger-managed and excluded from direct edits. */
-export type UpdateProductPayload = Omit<ProductPayload, 'stock'>
-
 export type AdminProductRow = {
   id: string
   sku: string
@@ -103,7 +100,7 @@ export async function createProduct(payload: ProductPayload): Promise<string> {
   return (data as { id: string }).id
 }
 
-export async function updateProduct(id: string, payload: UpdateProductPayload): Promise<void> {
+export async function updateProduct(id: string, payload: ProductPayload): Promise<void> {
   const { error } = await getSb().from('products').update(payload).eq('id', id)
   if (error) throw new Error(error.message)
 }
