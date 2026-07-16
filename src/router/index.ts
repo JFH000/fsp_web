@@ -17,7 +17,6 @@ const router = createRouter({
         { path: 'cart',            name: 'cart',           component: () => import('@/modules/cart/views/CartView.vue') },
         { path: 'checkout',        name: 'checkout',       component: () => import('@/modules/cart/views/CartView.vue') },
         { path: 'hvac-calculator', name: 'hvac-calculator',component: () => import('@/modules/hvac/views/HvacCalculatorView.vue') },
-        { path: 'favorites',       name: 'favorites',      component: () => import('@/modules/favorites/views/FavoritesView.vue'), meta: { requiresUser: true } },
       ],
     },
 

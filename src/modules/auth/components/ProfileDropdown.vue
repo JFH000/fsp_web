@@ -28,10 +28,6 @@
 
         <!-- Acciones -->
         <div class="dropdown-body">
-          <button class="dropdown-item" @click="onFavorites">
-            <Star class="h-3.5 w-3.5 flex-shrink-0" />
-            Mis favoritos
-          </button>
           <button class="dropdown-item" @click="onEditProfile">
             <Pencil class="h-3.5 w-3.5 flex-shrink-0" />
             Editar perfil
@@ -49,14 +45,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Pencil, LogOut, Star } from '@lucide/vue'
+import { Pencil, LogOut } from '@lucide/vue'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
 import { useAuthModal } from '../composables/useAuthModal'
 
 const authStore = useAuthStore()
 const { open }  = useAuthModal()
-const router = useRouter()
 
 const isOpen       = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
@@ -76,11 +70,6 @@ function handleOutsideClick(e: MouseEvent) {
 
 onMounted(() => document.addEventListener('click', handleOutsideClick))
 onUnmounted(() => document.removeEventListener('click', handleOutsideClick))
-
-function onFavorites() {
-  isOpen.value = false
-  router.push('/favorites')
-}
 
 function onEditProfile() {
   isOpen.value = false

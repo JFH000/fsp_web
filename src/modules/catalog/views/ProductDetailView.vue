@@ -100,20 +100,8 @@
             <code class="font-mono text-[11px] font-semibold text-teal-700 bg-teal-50 border border-teal-100 px-2 py-0.5 rounded">{{ product.sku }}</code>
           </div>
 
-          <!-- Name + favorite -->
-          <div class="flex items-start gap-3">
-            <h1 class="text-[1.75rem] font-extrabold text-slate-900 leading-snug flex-1 text-balance tracking-tight">{{ product.name }}</h1>
-            <button
-              @click="handleFavorite"
-              class="flex-shrink-0 mt-1 p-2 rounded-xl hover:bg-slate-100 transition-colors"
-              :title="favoritesStore.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'"
-            >
-              <Star
-                class="h-5 w-5 transition-colors"
-                :class="favoritesStore.isFavorite(product.id) ? 'text-amber-400 fill-amber-400' : 'text-slate-300 hover:text-amber-400'"
-              />
-            </button>
-          </div>
+          <!-- Name -->
+          <h1 class="text-[1.75rem] font-extrabold text-slate-900 leading-snug flex-1 text-balance tracking-tight">{{ product.name }}</h1>
 
           <!-- Refrigerant compatibility -->
           <div v-if="product.refrigerants.length" class="flex items-center gap-1.5 flex-wrap">
@@ -222,12 +210,10 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch, Pencil, Star, Pause, Play } from '@lucide/vue'
+import { ChevronRight, ArrowLeft, ShoppingCart, Check, PackageSearch, Pencil, Pause, Play } from '@lucide/vue'
 import { useCatalogStore } from '../stores/catalog.store'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
-import { useAuthModal } from '@/modules/auth/composables/useAuthModal'
-import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
 import { formatCurrency } from '@/shared/utils/currency'
 import AppBadge from '@/shared/components/ui/AppBadge.vue'
 import { useProductPrice } from '@/modules/catalog/composables/useProductPrice'
@@ -236,8 +222,6 @@ const route          = useRoute()
 const catalog        = useCatalogStore()
 const cart           = useCartStore()
 const auth           = useAuthStore()
-const authModal      = useAuthModal()
-const favoritesStore = useFavoritesStore()
 
 const product     = computed(() => catalog.getById(route.params.id as string))
 const activeImage = ref(0)
@@ -300,16 +284,6 @@ function handleAdd() {
   cart.addToCart(product.value, qty.value)
   justAdded.value = true
   setTimeout(() => (justAdded.value = false), 2000)
-}
-
-function handleFavorite() {
-  if (!auth.isAuthenticated) {
-    authModal.open('login', 'Inicia sesión para guardar tus productos favoritos')
-    return
-  }
-  if (product.value) {
-    favoritesStore.toggleFavorite(auth.user!.id, product.value.id)
-  }
 }
 
 </script>
