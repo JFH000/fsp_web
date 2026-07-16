@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { setActivePinia, createPinia } from 'pinia'
-import { useProductPrice } from '../useProductPrice'
+import { useProductPrice, resolveEffectivePrice } from '../useProductPrice'
 import { useAuthStore } from '@/modules/auth/stores/auth.store'
 import type { Product } from '@/shared/types'
 
@@ -104,5 +104,25 @@ describe('useProductPrice', () => {
     const { effectivePrice, isDiscounted } = useProductPrice(ref(null))
     expect(effectivePrice.value).toBeNull()
     expect(isDiscounted.value).toBe(false)
+  })
+})
+
+describe('resolveEffectivePrice (pure)', () => {
+  it('returns base price with no role, no Vue context required', () => {
+    const result = resolveEffectivePrice(BASE, 1, null)
+    expect(result.effectivePrice).toBe(100_000)
+    expect(result.isDiscounted).toBe(false)
+  })
+
+  it('customer_ws1 qty 1 resolves WS1 tier directly', () => {
+    const result = resolveEffectivePrice(BASE, 1, 'customer_ws1')
+    expect(result.effectivePrice).toBe(80_000)
+    expect(result.tierLabel).toBe('WS1')
+  })
+
+  it('customer_ws3 qty 10 resolves WS4 bulk tier directly', () => {
+    const result = resolveEffectivePrice(BASE, 10, 'customer_ws3')
+    expect(result.effectivePrice).toBe(65_000)
+    expect(result.tierLabel).toBe('OEM ×10')
   })
 })

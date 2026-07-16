@@ -2,13 +2,20 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import type { CartItem, Product } from '@/shared/types'
+import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import { resolveEffectivePrice } from '@/modules/catalog/composables/useProductPrice'
 
 export const useCartStore = defineStore('cart', () => {
   const items = useLocalStorage<CartItem[]>('fsp-cart', [])
   const isDrawerOpen = ref(false)
 
+  function lineUnitPrice(item: CartItem): number {
+    const auth = useAuthStore()
+    return resolveEffectivePrice(item.product, item.quantity, auth.profile?.role).effectivePrice ?? 0
+  }
+
   const totalItems = computed(() => items.value.reduce((s, i) => s + i.quantity, 0))
-  const subtotal   = computed(() => items.value.reduce((s, i) => s + (i.product.priceCop ?? i.product.priceUsd ?? 0) * i.quantity, 0))
+  const subtotal   = computed(() => items.value.reduce((s, i) => s + lineUnitPrice(i) * i.quantity, 0))
 
   function addToCart(product: Product, quantity = 1) {
     const existing = items.value.find(i => i.product.id === product.id)
@@ -40,6 +47,7 @@ export const useCartStore = defineStore('cart', () => {
   return {
     items, isDrawerOpen,
     totalItems, subtotal,
+    lineUnitPrice,
     addToCart, removeFromCart, updateQuantity, clearCart,
     openDrawer, closeDrawer,
   }
