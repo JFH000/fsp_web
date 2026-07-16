@@ -83,11 +83,32 @@ export interface FilterState {
 
 export type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name-asc' | 'newest'
 
+export type OrderStatus = 'pending_payment' | 'paid' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'
+
+export interface OrderItemSnapshot {
+  product_id: string
+  sku: string
+  name: string
+  image: string | null
+  unit_price: number
+  quantity: number
+  line_total: number
+}
+
 export interface Order {
   id: string
-  userId?: string
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
-  items: CartItem[]
-  total: number
-  createdAt: Date
+  user_id: string
+  status: OrderStatus
+  items: OrderItemSnapshot[]
+  subtotal: number
+  currency: string
+  shipping_name: string
+  shipping_phone: string
+  shipping_address: string
+  shipping_city: string
+  shipping_notes: string | null
+  stripe_checkout_session_id: string | null
+  stripe_payment_intent_id: string | null
+  created_at: string
+  paid_at: string | null
 }
