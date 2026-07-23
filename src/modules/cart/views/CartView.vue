@@ -30,12 +30,12 @@
             <p class="text-xs text-brand-700 font-bold mt-1">{{ item.product.brand.name }}</p>
           </div>
           <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-            <button @click="cart.updateQuantity(item.product.id, item.quantity - 1)" class="px-3 py-2 text-slate-500 hover:bg-slate-100 font-bold">−</button>
+            <button @click="cart.updateQuantity(item.product.id, item.quantity - 1)" :aria-label="`Disminuir cantidad de ${item.product.name}`" class="px-3 py-2 text-slate-500 hover:bg-slate-100 font-bold">−</button>
             <span class="px-4 text-sm font-semibold min-w-[2.5rem] text-center">{{ item.quantity }}</span>
-            <button @click="cart.updateQuantity(item.product.id, item.quantity + 1)" class="px-3 py-2 text-slate-500 hover:bg-slate-100 font-bold">+</button>
+            <button @click="cart.updateQuantity(item.product.id, item.quantity + 1)" :aria-label="`Aumentar cantidad de ${item.product.name}`" class="px-3 py-2 text-slate-500 hover:bg-slate-100 font-bold">+</button>
           </div>
           <p class="font-extrabold text-slate-900 w-24 text-right">{{ formatCurrency(cart.lineUnitPrice(item) * item.quantity) }}</p>
-          <button @click="cart.removeFromCart(item.product.id)" class="text-slate-300 hover:text-red-400 transition-colors ml-1">
+          <button @click="cart.removeFromCart(item.product.id)" :aria-label="`Eliminar ${item.product.name} del carrito`" class="text-slate-300 hover:text-red-400 transition-colors ml-1">
             <Trash2 class="h-4 w-4" />
           </button>
         </div>
@@ -64,17 +64,15 @@
             </div>
           </div>
 
-          <div class="flex justify-between items-center font-extrabold text-slate-900 text-xl border-t border-slate-100 pt-4 mb-6">
+          <div class="flex justify-between items-center font-extrabold text-slate-900 text-xl border-t border-slate-100 pt-4">
             <span>Total</span>
             <span>{{ formatCurrency(cart.subtotal) }}</span>
           </div>
+          <p class="text-xs text-slate-400 text-right mb-6">COP · IVA incluido</p>
 
-          <RouterLink
-            to="/checkout"
-            class="block w-full text-center bg-accent-500 hover:bg-accent-600 text-white font-bold py-4 rounded-xl text-base transition-colors mb-3"
-          >
+          <AppButton to="/checkout" variant="accent" size="lg" full class="mb-3">
             Proceder al checkout →
-          </RouterLink>
+          </AppButton>
           <RouterLink to="/catalog" class="block text-center text-sm text-brand-700 hover:text-brand-800 font-medium">
             ← Seguir comprando
           </RouterLink>
@@ -98,6 +96,7 @@
 
 <script setup lang="ts">
 import { ChevronRight, ShoppingCart, Trash2 } from '@lucide/vue'
+import AppButton from '@/shared/components/ui/AppButton.vue'
 import { useCartStore } from '../stores/cart.store'
 import { formatCurrency } from '@/shared/utils/currency'
 

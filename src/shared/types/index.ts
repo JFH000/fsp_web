@@ -104,6 +104,8 @@ export interface Order {
   currency: string
   shipping_name: string
   shipping_phone: string
+  shipping_company: string | null
+  shipping_tax_id: string | null
   shipping_address: string
   shipping_city: string
   shipping_notes: string | null
@@ -111,4 +113,19 @@ export interface Order {
   stripe_payment_intent_id: string | null
   created_at: string
   paid_at: string | null
+}
+
+export interface ShippingAddress {
+  id: string
+  user_id: string
+  label: string | null
+  full_name: string
+  phone: string
+  company: string | null
+  tax_id: string | null
+  address: string
+  city: string
+  notes: string | null
+  is_default: boolean
+  created_at: string
 }

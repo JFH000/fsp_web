@@ -4,6 +4,8 @@ import type { CartItem } from '@/shared/types'
 export type ShippingInfo = {
   name: string
   phone: string
+  company?: string
+  taxId?: string
   address: string
   city: string
   notes?: string
@@ -12,7 +14,7 @@ export type ShippingInfo = {
 export async function createCheckoutSession(
   items: CartItem[],
   shipping: ShippingInfo,
-): Promise<{ url: string }> {
+): Promise<{ url: string; dropped: string[] }> {
   if (!supabase) throw new Error('Supabase no configurado')
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) throw new Error('No autenticado')
@@ -25,5 +27,5 @@ export async function createCheckoutSession(
   })
   if (error) throw new Error(error.message)
   if (!data?.url) throw new Error(data?.error ?? 'No se pudo iniciar el pago')
-  return data
+  return { url: data.url, dropped: data.dropped ?? [] }
 }

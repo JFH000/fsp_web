@@ -65,14 +65,15 @@
             <div class="flex flex-col items-end justify-between flex-shrink-0">
               <button
                 @click="cart.removeFromCart(item.product.id)"
+                :aria-label="`Eliminar ${item.product.name} del carrito`"
                 class="text-slate-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
               >
                 <X class="h-4 w-4" />
               </button>
               <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
-                <button @click="cart.updateQuantity(item.product.id, item.quantity - 1)" class="px-2 py-1 text-slate-500 hover:bg-slate-50 text-sm font-bold">−</button>
+                <button @click="cart.updateQuantity(item.product.id, item.quantity - 1)" :aria-label="`Disminuir cantidad de ${item.product.name}`" class="px-2 py-1 text-slate-500 hover:bg-slate-50 text-sm font-bold">−</button>
                 <span class="px-2 text-xs font-semibold">{{ item.quantity }}</span>
-                <button @click="cart.updateQuantity(item.product.id, item.quantity + 1)" class="px-2 py-1 text-slate-500 hover:bg-slate-50 text-sm font-bold">+</button>
+                <button @click="cart.updateQuantity(item.product.id, item.quantity + 1)" :aria-label="`Aumentar cantidad de ${item.product.name}`" class="px-2 py-1 text-slate-500 hover:bg-slate-50 text-sm font-bold">+</button>
               </div>
             </div>
           </div>
@@ -80,24 +81,17 @@
 
         <!-- Footer -->
         <div v-if="cart.items.length > 0" class="px-5 py-5 border-t border-slate-100 bg-white">
-          <div class="flex justify-between items-center mb-4">
+          <div class="flex justify-between items-center mb-1">
             <span class="text-slate-600">Subtotal</span>
             <span class="text-xl font-extrabold text-slate-900">{{ formatCurrency(cart.subtotal) }}</span>
           </div>
-          <RouterLink
-            to="/cart"
-            @click="cart.closeDrawer()"
-            class="block w-full text-center bg-brand-700 hover:bg-brand-800 text-white font-bold py-3.5 rounded-xl text-base transition-colors mb-2"
-          >
+          <p class="text-xs text-slate-400 text-right mb-4">COP · IVA incluido</p>
+          <AppButton to="/cart" variant="primary" size="lg" full class="mb-2" @click="cart.closeDrawer()">
             Ver carrito completo
-          </RouterLink>
-          <RouterLink
-            to="/checkout"
-            @click="cart.closeDrawer()"
-            class="block w-full text-center bg-accent-500 hover:bg-accent-600 text-white font-bold py-3.5 rounded-xl text-base transition-colors"
-          >
+          </AppButton>
+          <AppButton to="/checkout" variant="accent" size="lg" full @click="cart.closeDrawer()">
             Comprar ahora →
-          </RouterLink>
+          </AppButton>
           <button @click="cart.clearCart()" class="w-full text-center text-xs text-slate-400 hover:text-red-400 mt-3 transition-colors">
             Vaciar carrito
           </button>
@@ -109,6 +103,7 @@
 
 <script setup lang="ts">
 import { ShoppingCart, X } from '@lucide/vue'
+import AppButton from '@/shared/components/ui/AppButton.vue'
 import { useCartStore } from '../stores/cart.store'
 import { formatCurrency } from '@/shared/utils/currency'
 

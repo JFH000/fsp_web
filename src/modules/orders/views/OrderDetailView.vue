@@ -36,6 +36,9 @@
       <div class="text-sm text-slate-600 space-y-1">
         <p class="font-semibold text-slate-900 mb-1">Envío</p>
         <p>{{ order.shipping_name }} · {{ order.shipping_phone }}</p>
+        <p v-if="order.shipping_company" class="text-slate-500">
+          {{ order.shipping_company }}<span v-if="order.shipping_tax_id"> · NIT {{ order.shipping_tax_id }}</span>
+        </p>
         <p>{{ order.shipping_address }}, {{ order.shipping_city }}</p>
         <p v-if="order.shipping_notes" class="text-slate-400">{{ order.shipping_notes }}</p>
       </div>

@@ -112,6 +112,12 @@
             </div>
 
             <dl class="space-y-2 text-sm">
+              <div v-if="selected.shipping_company">
+                <dt class="text-slate-400 text-xs">Facturación</dt>
+                <dd class="text-slate-900">
+                  {{ selected.shipping_company }}<span v-if="selected.shipping_tax_id"> · NIT {{ selected.shipping_tax_id }}</span>
+                </dd>
+              </div>
               <div>
                 <dt class="text-slate-400 text-xs">Envío</dt>
                 <dd class="font-medium text-slate-900">{{ selected.shipping_address }}, {{ selected.shipping_city }}</dd>
